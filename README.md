@@ -26,3 +26,4 @@ De acordo com a arquitetura do MVP (Monólito Modular):
 * **Banco de Dados:** 
 * **Nuvem e Infraestrutura:** AWS
 * **CI/CD:** GitHub Actions
+Teste de CI com Jenkins
