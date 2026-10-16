@@ -1,0 +1,25 @@
+:root {
+  font-family: 'DM Sans', sans-serif;
+  color: #17251e;
+  background: #fbfcf9;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --ink: #17251e;
+  --muted: #69746d;
+  --green: #315e49;
+  --green-dark: #204533;
+  --mint: #e4efe5;
+  --line: #e5eae4;
+  --paper: #fbfcf9;
+  --coral: #da7659;
+  --serif: 'Fraunces', Georgia, serif;
+  font-weight: 400;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; min-height: 100vh; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid #d99870; outline-offset: 3px; }
+::selection { color: var(--ink); background: #d8e8d9; }
