@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
-from app.api.routes import adoptions, pets
+from app.api.routes import adoptions, manage, pets
 from app.core.config import settings
 from app.db.base import Base
 from app.db.session import engine, get_db
@@ -32,6 +32,7 @@ app.add_middleware(
 )
 app.include_router(pets.router, prefix="/api")
 app.include_router(adoptions.router, prefix="/api")
+app.include_router(manage.router, prefix="/api")
 
 
 @app.get("/api/health", tags=["Infraestrutura"])

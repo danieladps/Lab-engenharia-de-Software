@@ -1,3 +1,4 @@
+import secrets
 from datetime import datetime, timezone
 
 from sqlalchemy import CheckConstraint, DateTime, Integer, String, Text
@@ -24,6 +25,10 @@ class Pet(Base):
     description: Mapped[str] = mapped_column(Text)
     image_url: Mapped[str] = mapped_column(String(500))
     donor_name: Mapped[str] = mapped_column(String(120))
+    # Código secreto que permite ao responsável consultar os interesses recebidos (MVP sem login).
+    manage_token: Mapped[str] = mapped_column(
+        String(64), unique=True, index=True, default=lambda: secrets.token_urlsafe(24)
+    )
     status: Mapped[str] = mapped_column(String(30), default="available", index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     adoptions: Mapped[list["Adoption"]] = relationship(back_populates="pet", cascade="all, delete-orphan")

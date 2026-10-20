@@ -103,3 +103,52 @@ def test_adoption_request_requires_valid_contact_email(client):
     )
 
     assert response.status_code == 422
+
+
+INTEREST = {
+    "applicant_name": "Alex Silva",
+    "applicant_email": "alex@example.com",
+    "message": "Tenho tempo e espaço para cuidar muito bem da Nina.",
+}
+
+
+def test_publish_returns_manage_token_only_once(client):
+    created = client.post("/api/pets", json=sample_pet()).json()
+
+    assert len(created["manage_token"]) >= 20
+    assert "manage_token" not in client.get("/api/pets").json()[0]
+    assert "manage_token" not in client.get(f"/api/pets/{created['id']}").json()
+
+
+def test_owner_sees_received_interest_with_manage_token(client):
+    created = client.post("/api/pets", json=sample_pet()).json()
+    token = created["manage_token"]
+
+    before = client.get(f"/api/manage/{token}")
+    assert before.status_code == 200
+    assert before.json()["adoptions"] == []
+
+    client.post(f"/api/pets/{created['id']}/adoptions", json=INTEREST)
+    after = client.get(f"/api/manage/{token}").json()
+
+    assert after["pet"]["status"] == "adoption_pending"
+    assert after["adoptions"][0]["applicant_email"] == "alex@example.com"
+    assert after["adoptions"][0]["message"] == INTEREST["message"]
+    assert "manage_token" not in after["pet"]
+
+
+def test_manage_with_wrong_token_returns_404(client):
+    client.post("/api/pets", json=sample_pet())
+
+    assert client.get("/api/manage/codigo-invalido").status_code == 404
+
+
+def test_token_of_one_pet_does_not_show_another_pet(client):
+    first = client.post("/api/pets", json=sample_pet(name="Nina")).json()
+    second = client.post("/api/pets", json=sample_pet(name="Bolt")).json()
+    client.post(f"/api/pets/{second['id']}/adoptions", json=INTEREST)
+
+    data = client.get(f"/api/manage/{first['manage_token']}").json()
+
+    assert data["pet"]["name"] == "Nina"
+    assert data["adoptions"] == []

@@ -32,6 +32,12 @@ class PetRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class PetCreated(PetRead):
+    """Resposta da publicação: inclui o código de gerenciamento, exibido só uma vez."""
+
+    manage_token: str
+
+
 class AdoptionCreate(BaseModel):
     applicant_name: str = Field(min_length=2, max_length=120)
     applicant_email: str = Field(
@@ -51,3 +57,8 @@ class AdoptionRead(BaseModel):
     status: str
     created_at: datetime
     model_config = ConfigDict(from_attributes=True)
+
+
+class PetManagement(BaseModel):
+    pet: PetRead
+    adoptions: list[AdoptionRead]

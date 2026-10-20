@@ -5,7 +5,8 @@
 .brand-period { color: var(--coral); }
 .main-nav { align-self: stretch; display: flex; align-items: stretch; gap: 30px; }
 .nav-link { border: 0; background: none; color: var(--muted); font-size: 13px; font-weight: 600; }
-.nav-link { position: relative; padding: 0 2px; text-decoration: none; }
+.nav-link { position: relative; display: flex; align-items: center; padding: 0 2px; text-decoration: none; cursor: pointer; }
+.nav-short { display: none; }
 .nav-link::after { position: absolute; content: ''; height: 2px; bottom: 0; left: 0; right: 0; background: var(--green); transform: scaleX(0); transition: transform .2s; }
 .nav-link:hover, .nav-link.active { color: var(--green-dark); }
 .nav-link.active::after { transform: scaleX(1); }
@@ -139,6 +140,8 @@
   .brand-mark { width: 32px; height: 32px; }
   .main-nav { gap: 11px; overflow-x: auto; }
   .nav-link { max-width: 100px; font-size: 10px; white-space: nowrap; }
+  .nav-long { display: none; }
+  .nav-short { display: inline; }
   .account-actions { gap: 8px; }
   .account-actions .button-small { min-height: 34px; padding-inline: 9px; gap: 4px; font-size: 10px; }
   .hero { padding: 44px 20px 38px; grid-template-columns: 1fr; gap: 31px; }
@@ -175,5 +178,25 @@
   .modal-heading h2 { font-size: 27px; }
   .form-grid { grid-template-columns: 1fr; }
   .full-field { grid-column: auto; }
+}
+/* Área do responsável (UC03) */
+.manage-page { min-height: 60vh; }
+.back-link { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 18px; padding: 0; border: 0; background: none; color: var(--green); font-size: 13px; font-weight: 600; cursor: pointer; }
+.manage-pet { margin: 0 0 22px; flex-wrap: wrap; }
+.manage-pet > span:nth-child(2) { flex: 1; min-width: 140px; }
+.status-pill { padding: 5px 10px; border-radius: 999px; font-size: 11px; font-weight: 700; background: var(--mint); color: var(--green-dark); }
+.status-adoption_pending { background: #fff0e9; color: #9b4735; }
+.interest-list { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.interest-card { padding: 16px; border: 1px solid var(--line); background: white; }
+.interest-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.interest-head strong { font-family: var(--serif); font-size: 18px; font-weight: 500; }
+.interest-head time { color: var(--muted); font-size: 11px; }
+.interest-email { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; color: var(--green); font-size: 13px; word-break: break-all; }
+.interest-card p { margin: 10px 0 0; color: var(--ink); font-size: 13px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy-field { display: flex; gap: 8px; }
+.copy-field input { flex: 1; min-width: 0; }
+.hint { display: flex; align-items: center; gap: 6px; margin: 0; color: var(--muted); font-size: 11px; }
+@media (max-width: 650px) {
+  .copy-field { flex-direction: column; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }

@@ -34,6 +34,9 @@ def seed_demo_data() -> None:
             )
             db.commit()
             print("Anúncios de demonstração adicionados.")
+        print("Links de gerenciamento (use na demonstração para ver os interesses recebidos):")
+        for pet in db.scalars(select(Pet).order_by(Pet.id)).all():
+            print(f"  {pet.name}: http://localhost:5173/#gerenciar/{pet.manage_token}")
 
 
 if __name__ == "__main__":
