@@ -1,13 +1,31 @@
 import { useEffect, useState } from 'react'
 import {
-  ArrowRight, Check, ChevronDown, Heart, LoaderCircle, MapPin, PawPrint,
-  Plus, Search, ShieldCheck, Sparkles, X,
+  ArrowLeft, ArrowRight, Check, ChevronDown, Copy, Heart, Inbox, KeyRound, LoaderCircle, Mail,
+  MapPin, PawPrint, Plus, Search, ShieldCheck, Sparkles, X,
 } from 'lucide-react'
 import api from './api'
 import './App.css'
 
 const speciesOptions = ['Todos', 'Cão', 'Gato', 'Outro']
 const sizeLabels = { small: 'Pequeno', medium: 'Médio', large: 'Grande' }
+const statusLabels = { available: 'Disponível', adoption_pending: 'Interesse recebido' }
+const MANAGE_PREFIX = '#gerenciar/'
+
+function tokenFromHash() {
+  const { hash } = window.location
+  return hash.startsWith(MANAGE_PREFIX) ? decodeURIComponent(hash.slice(MANAGE_PREFIX.length)) : ''
+}
+
+function manageLink(token) {
+  return `${window.location.origin}${window.location.pathname}${MANAGE_PREFIX}${token}`
+}
+
+// Aceita tanto o link completo quanto só o código colado pelo responsável.
+function extractToken(value) {
+  const text = value.trim()
+  const index = text.indexOf(MANAGE_PREFIX)
+  return index >= 0 ? text.slice(index + MANAGE_PREFIX.length) : text
+}
 
 function App() {
   const [petResults, setPetResults] = useState({ filterKey: null, items: [], error: '' })
@@ -16,6 +34,7 @@ function App() {
   const [modal, setModal] = useState(null)
   const [notice, setNotice] = useState('')
   const [busy, setBusy] = useState(false)
+  const [manageToken, setManageToken] = useState(tokenFromHash)
   const filterKey = JSON.stringify(filters)
   const currentResults = petResults.filterKey === filterKey ? petResults : null
   const pets = currentResults?.items ?? []
@@ -44,6 +63,12 @@ function App() {
   }, [filterKey])
 
   useEffect(() => {
+    const syncToken = () => setManageToken(tokenFromHash())
+    window.addEventListener('hashchange', syncToken)
+    return () => window.removeEventListener('hashchange', syncToken)
+  }, [])
+
+  useEffect(() => {
     if (!notice) return undefined
     const timeout = window.setTimeout(() => setNotice(''), 3600)
     return () => window.clearTimeout(timeout)
@@ -56,13 +81,13 @@ function App() {
     setBusy(true)
     try {
       const { data: createdPet } = await api.post('/pets', payload)
-      setModal(null)
-      setNotice('Anúncio publicado. Que bom que mais um pet está a caminho de um lar!')
+      setModal({ type: 'created', pet: createdPet })
+      const { manage_token: _token, ...publicPet } = createdPet
       if ((filters.species === 'Todos' || filters.species === createdPet.species)
         && (filters.size === 'Todos' || filters.size === createdPet.size)
         && (!filters.city || createdPet.city.toLowerCase().includes(filters.city.toLowerCase()))) {
         setPetResults((current) => current.filterKey === filterKey
-          ? { ...current, items: [createdPet, ...current.items] }
+          ? { ...current, items: [publicPet, ...current.items] }
           : current)
       }
     } catch (error) {
@@ -94,6 +119,17 @@ function App() {
     }
   }
 
+  function openManagePage(token) {
+    setModal(null)
+    window.location.hash = `${MANAGE_PREFIX.slice(1)}${encodeURIComponent(token)}`
+    window.scrollTo(0, 0)
+  }
+
+  function leaveManagePage() {
+    window.location.hash = 'pets'
+    setManageToken('')
+  }
+
   return (
     <div className="app-shell">
       <header className="topbar">
@@ -102,7 +138,8 @@ function App() {
           <span>petlume<span className="brand-period">.</span></span>
         </a>
         <nav className="main-nav" aria-label="Navegação principal">
-          <a className="nav-link active" href="#pets">Encontrar um pet</a>
+          <a className={manageToken ? 'nav-link' : 'nav-link active'} href="#pets"><span className="nav-long">Encontrar um pet</span><span className="nav-short">Pets</span></a>
+          <button className={manageToken ? 'nav-link active' : 'nav-link'} onClick={() => setModal({ type: 'access' })}>Meu anúncio</button>
         </nav>
         <div className="account-actions">
           <button className="button button-dark button-small" onClick={() => setModal({ type: 'pet' })}>
@@ -111,6 +148,9 @@ function App() {
         </div>
       </header>
 
+      {manageToken ? (
+        <ManagePage key={manageToken} token={manageToken} onBack={leaveManagePage} />
+      ) : (
       <main>
         <section className="hero" id="inicio">
           <div className="hero-copy">
@@ -193,6 +233,7 @@ function App() {
           <span className="promise-paw"><PawPrint size={60} /></span>
         </section>
       </main>
+      )}
 
       <footer className="site-footer">
         <a className="brand footer-brand" href="#inicio"><span className="brand-mark"><PawPrint size={18} /></span><span>petlume<span className="brand-period">.</span></span></a>
@@ -201,9 +242,10 @@ function App() {
       {notice && <div className="toast" role="status"><Check size={17} />{notice}<button onClick={() => setNotice('')} aria-label="Fechar aviso"><X size={15} /></button></div>}
       {modal && (
         <Modal onClose={() => setModal(null)}>
-          {modal.type === 'pet'
-            ? <PetForm busy={busy} onSubmit={handlePetSubmit} onClose={() => setModal(null)} />
-            : <AdoptionForm pet={modal.pet} busy={busy} onSubmit={handleAdoptionSubmit} onClose={() => setModal(null)} />}
+          {modal.type === 'pet' && <PetForm busy={busy} onSubmit={handlePetSubmit} onClose={() => setModal(null)} />}
+          {modal.type === 'adoption' && <AdoptionForm pet={modal.pet} busy={busy} onSubmit={handleAdoptionSubmit} onClose={() => setModal(null)} />}
+          {modal.type === 'created' && <CreatedNotice pet={modal.pet} onOpen={() => openManagePage(modal.pet.manage_token)} onClose={() => setModal(null)} />}
+          {modal.type === 'access' && <AccessForm onSubmit={openManagePage} onClose={() => setModal(null)} />}
         </Modal>
       )}
     </div>
@@ -283,6 +325,123 @@ function AdoptionForm({ pet, busy, onSubmit, onClose }) {
         <button className="button button-dark form-submit" disabled={busy}>{busy ? <LoaderCircle className="spin" size={18} /> : <Heart size={17} />} Enviar interesse</button>
       </form>
     </>
+  )
+}
+
+function CreatedNotice({ pet, onOpen, onClose }) {
+  const [copied, setCopied] = useState(false)
+  const link = manageLink(pet.manage_token)
+
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(link)
+      setCopied(true)
+    } catch {
+      setCopied(false)
+    }
+  }
+
+  return (
+    <>
+      <ModalHeading eyebrow="Anúncio publicado" title={`${pet.name} já está na vitrine`} subtitle="Guarde este link: é por ele que você vai ver quem se interessou. Ele não será mostrado de novo." onClose={onClose} />
+      <div className="form-stack">
+        <label>Seu link de gerenciamento
+          <span className="copy-field">
+            <input readOnly value={link} onFocus={(event) => event.target.select()} aria-label="Link de gerenciamento" />
+            <button type="button" className="button button-light button-small" onClick={copyLink}>
+              {copied ? <Check size={15} /> : <Copy size={15} />} {copied ? 'Copiado' : 'Copiar'}
+            </button>
+          </span>
+        </label>
+        <p className="hint"><KeyRound size={14} /> Quem tiver este link vê os contatos dos interessados. Não compartilhe.</p>
+        <button className="button button-dark form-submit" onClick={onOpen}><Inbox size={17} /> Ver interesses recebidos</button>
+      </div>
+    </>
+  )
+}
+
+function AccessForm({ onSubmit, onClose }) {
+  return (
+    <>
+      <ModalHeading eyebrow="Para quem anunciou" title="Acesse seu anúncio" subtitle="Cole o link ou o código que apareceu quando você publicou o pet." onClose={onClose} />
+      <form className="form-stack" onSubmit={(event) => {
+        event.preventDefault()
+        const token = extractToken(new FormData(event.currentTarget).get('token') || '')
+        if (token) onSubmit(token)
+      }}>
+        <label>Link ou código<input name="token" required minLength="10" autoComplete="off" placeholder="https://.../#gerenciar/..." /></label>
+        <button className="button button-dark form-submit"><KeyRound size={17} /> Ver meu anúncio</button>
+      </form>
+    </>
+  )
+}
+
+function ManagePage({ token, onBack }) {
+  const [state, setState] = useState({ loading: true, data: null, error: '' })
+
+  useEffect(() => {
+    let active = true
+    api.get(`/manage/${encodeURIComponent(token)}`)
+      .then(({ data }) => { if (active) setState({ loading: false, data, error: '' }) })
+      .catch((error) => {
+        if (active) {
+          setState({
+            loading: false,
+            data: null,
+            error: error.response?.status === 404
+              ? 'Não encontramos um anúncio com este link. Confira se ele foi copiado inteiro.'
+              : 'Não foi possível carregar o anúncio. Confira se a API está ativa.',
+          })
+        }
+      })
+    return () => { active = false }
+  }, [token])
+
+  const { loading, data, error } = state
+
+  return (
+    <main className="content-section manage-page">
+      <button className="back-link" onClick={onBack}><ArrowLeft size={16} /> Voltar para os pets</button>
+      <div className="section-heading">
+        <div><span className="eyebrow eyebrow-muted">Área do responsável</span><h2>Interesses recebidos<span className="brand-period">.</span></h2></div>
+      </div>
+      {loading && <div className="loading-state"><LoaderCircle className="spin" size={24} /> Carregando seu anúncio...</div>}
+      {error && <div className="inline-error">{error}</div>}
+      {data && (
+        <>
+          <div className="modal-pet manage-pet">
+            <img src={data.pet.image_url} alt="" />
+            <span>
+              <strong>{data.pet.name}</strong>
+              <small><MapPin size={13} /> {data.pet.city} · {sizeLabels[data.pet.size]}</small>
+            </span>
+            <span className={`status-pill status-${data.pet.status}`}>{statusLabels[data.pet.status] ?? data.pet.status}</span>
+          </div>
+          {data.adoptions.length ? (
+            <ul className="interest-list">
+              {data.adoptions.map((adoption) => (
+                <li key={adoption.id} className="interest-card">
+                  <div className="interest-head">
+                    <strong>{adoption.applicant_name}</strong>
+                    <time dateTime={adoption.created_at}>{new Date(adoption.created_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</time>
+                  </div>
+                  <a className="interest-email" href={`mailto:${adoption.applicant_email}?subject=${encodeURIComponent(`Adoção de ${data.pet.name}`)}`}>
+                    <Mail size={14} /> {adoption.applicant_email}
+                  </a>
+                  <p>{adoption.message}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="empty-state">
+              <span className="empty-paw"><Inbox size={28} /></span>
+              <h3>Nenhum interesse ainda</h3>
+              <p>Assim que alguém demonstrar interesse em {data.pet.name}, o contato aparece aqui.</p>
+            </div>
+          )}
+        </>
+      )}
+    </main>
   )
 }
 
