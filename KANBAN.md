@@ -9,7 +9,7 @@
 | --- | --- | --- | --- | --- |
 | UC01 | Publicar anúncio de pet | Responsável pelo pet | Cadastrar o pet e os dados de contato do responsável. | Concluído |
 | UC02 | Buscar e visualizar pets disponíveis | Pessoa interessada em adotar | Consultar anúncios, filtrar por espécie, porte e cidade e ver os dados do pet. | Concluído |
-| UC03 | Demonstrar interesse em um pet | Pessoa interessada em adotar | Enviar nome, e-mail e mensagem para o responsável; o anúncio fica indisponível para novos pedidos. | Em andamento: envio e bloqueio estão implementados; falta uma tela para o responsável consultar o interesse recebido. |
+| UC03 | Demonstrar interesse em um pet | Pessoa interessada em adotar | Enviar nome, e-mail e mensagem para o responsável; o anúncio fica indisponível para novos pedidos. | Concluído: envio, bloqueio e consulta pelo responsável via link de gerenciamento. |
 
 ## Casos de uso do documento original
 
@@ -21,7 +21,7 @@ O documento de requisitos lista os casos abaixo. UC01–UC03 são o recorte esco
 | UC-A2 | Editar/remover anúncio de pet | Fora do escopo desta sprint. |
 | UC-A3 | Buscar/filtrar pets | Incluído em UC02 — concluído. |
 | UC-A4 | Visualizar perfil detalhado do pet | Incluído em UC02 — dados são exibidos nos cartões; não há uma tela de detalhes separada. |
-| UC-A5 | Solicitar adoção | Incluído em UC03 — parcial; o interesse é salvo, mas o responsável ainda não tem uma tela para consultá-lo. |
+| UC-A5 | Solicitar adoção | Incluído em UC03 — concluído; o responsável consulta os interesses pelo link de gerenciamento. |
 | UC-A6 | Aprovar/recusar solicitação de adoção | Fora do escopo desta sprint. |
 | UC-A7 | Acompanhar status da adoção | Fora do escopo desta sprint. |
 | UC-A8 | Avaliar processo de adoção | Fora do escopo desta sprint. |
@@ -36,9 +36,10 @@ O documento de requisitos lista os casos abaixo. UC01–UC03 são o recorte esco
 
 | A fazer | Em andamento | Concluído |
 | --- | --- | --- |
-| Validar manualmente os três casos de uso pela interface e conferir a persistência após reiniciar a API. | Criar acesso para o responsável consultar os interesses recebidos (completar UC03). | Estrutura React/Vite e API FastAPI organizadas. |
+| Validar manualmente os três casos de uso pela interface e conferir a persistência após reiniciar a API. | — | Estrutura React/Vite e API FastAPI organizadas. |
 | Preparar os anúncios de exemplo e ensaiar a demonstração. | — | SQLite configurado, tabelas criadas automaticamente e carga de exemplos disponível. |
 | Registrar evidências da demonstração e atualizar o quadro ao concluir as tarefas. | — | Testes automatizados da API, lint e build do front-end aprovados. |
+| — | — | Consulta dos interesses pelo responsável com link de gerenciamento (UC03). |
 
 ## Critérios para concluir a sprint
 

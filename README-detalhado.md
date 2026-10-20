@@ -73,8 +73,17 @@ Todas as rotas usam o prefixo `/api`; não é necessário autenticar.
 | `GET` | `/pets/{pet_id}` | Consulta os detalhes de um anúncio |
 | `POST` | `/pets` | Publica um anúncio com `donor_name` e dados do pet |
 | `POST` | `/pets/{pet_id}/adoptions` | Registra nome, e-mail e mensagem de interesse |
+| `GET` | `/manage/{manage_token}` | Mostra o anúncio e os interesses recebidos ao responsável |
 
 Uma solicitação só pode ser registrada para um pet disponível. Após o envio, o anúncio muda para `adoption_pending` e sai da busca pública.
+
+### Consulta dos interesses pelo responsável
+
+Como o MVP não tem login, ao publicar um anúncio a API devolve um **código de gerenciamento** (`manage_token`), mostrado uma única vez na tela junto com um link no formato `http://localhost:5173/#gerenciar/<código>`. Com esse link, ou colando o código em **Meu anúncio**, o responsável vê os dados do pet e o nome, e-mail e mensagem de quem demonstrou interesse. O código nunca aparece na busca pública nem nos detalhes do pet.
+
+`python -m app.seed_demo` imprime no terminal os links de gerenciamento dos anúncios de exemplo, para usar na demonstração.
+
+> Quem já tinha o arquivo `backend/petlume_mvp.db` criado antes desta mudança precisa apagá-lo e rodar `python -m app.seed_demo` de novo, porque a tabela `pets` ganhou a coluna `manage_token`.
 
 ## Testes e validações
 
