@@ -20,7 +20,7 @@ O documento de requisitos lista os casos abaixo. UC01–UC03 são o recorte esco
 | UC-A1 | Cadastrar pet para adoção | Incluído em UC01 — concluído. |
 | UC-A2 | Editar/remover anúncio de pet | Fora do escopo desta sprint. |
 | UC-A3 | Buscar/filtrar pets | Incluído em UC02 — concluído. |
-| UC-A4 | Visualizar perfil detalhado do pet | Incluído em UC02 — dados são exibidos nos cartões; não há uma tela de detalhes separada. |
+| UC-A4 | Visualizar perfil detalhado do pet | Concluído (PR feat/layout-figma): tela de detalhes em `/pets/:id`. |
 | UC-A5 | Solicitar adoção | Incluído em UC03 — concluído; o responsável consulta os interesses em Meus anúncios. |
 | UC-A6 | Aprovar/recusar solicitação de adoção | Planejado (PR feat/status-solicitacao). |
 | UC-A7 | Acompanhar status da adoção | Planejado (PR feat/status-solicitacao). |
@@ -40,6 +40,7 @@ O documento de requisitos lista os casos abaixo. UC01–UC03 são o recorte esco
 | Preparar os anúncios de exemplo e ensaiar a demonstração. | — | SQLite configurado, tabelas criadas automaticamente e carga de exemplos disponível. |
 | Registrar evidências da demonstração e atualizar o quadro ao concluir as tarefas. | — | Testes automatizados da API, lint e build do front-end aprovados. |
 | — | — | Cadastro, login e logout; consulta dos interesses em Meus anúncios (UC03, UC-T1, UC-T2). |
+| — | — | Novo layout mobile-first dos protótipos do Figma, com tela de detalhes do pet (UC-A4). |
 
 ## Critérios para concluir a sprint
 

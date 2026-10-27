@@ -11,7 +11,7 @@ Plataforma web enxuta para aproximar responsáveis por pets e pessoas interessad
 
 ## Tecnologias e estrutura
 
-- **Front-end:** React, Vite, Axios e Lucide React.
+- **Front-end:** React, Vite, React Router, Axios e Lucide React.
 - **Back-end:** Python, FastAPI, Pydantic, SQLAlchemy, Uvicorn, PyJWT e pwdlib (Argon2).
 - **Banco:** SQLite, no arquivo `backend/petlume_mvp.db` por padrão, com migrações pelo Alembic.
 - **Testes:** pytest, httpx e FastAPI TestClient com SQLite em memória.
@@ -30,7 +30,11 @@ backend/
 ├── migrations/           # Migrações versionadas do banco (Alembic)
 └── tests/
 frontend/
-└── src/                  # Interface React
+└── src/
+    ├── components/       # Moldura com menu inferior, cartão de pet, painel, etc.
+    ├── lib/              # Login (auth.jsx), avisos (toast.jsx) e textos dos pets
+    ├── pages/            # Uma tela por arquivo: início, detalhes, entrar, perfil...
+    └── App.jsx           # Rotas
 ```
 
 ## Instalação e execução
@@ -76,6 +80,20 @@ A interface fica em http://localhost:5173, a API em http://localhost:8000 e o Sw
 As tabelas são criadas e alteradas **somente** por migração: `alembic upgrade head`. Ao mudar um modelo, gere uma nova com `alembic revision --autogenerate -m "descrição"`, revise o arquivo em `migrations/versions/` e suba junto no PR; o teste `test_migrations.py` falha se um modelo mudar sem migração. Para mudar o endereço do banco, edite `DATABASE_URL` no arquivo `backend/.env`. O arquivo `.env` e o banco local não devem ser enviados ao Git.
 
 `python -m app.seed_demo` cria duas contas fictícias, `abrigo@petlume.example` (com três anúncios) e `visitante@petlume.example`, se o banco ainda não tiver usuários. A senha das duas é `DEMO_USER_PASSWORD` do `.env` ou, se estiver vazia, uma gerada e mostrada no terminal. Rodar de novo não duplica nada.
+
+## Telas
+
+| Endereço | Tela | Precisa de login |
+| --- | --- | --- |
+| `/` | Início: busca por nome ou raça, filtros de espécie, porte e cidade | Não |
+| `/pets/:id` | Detalhes do pet e botão "Quero adotar" | Só para enviar o pedido |
+| `/entrar` e `/cadastro` | Entrar e criar conta | Não |
+| `/anunciar` | Formulário de anúncio | Sim |
+| `/meus-anuncios` | Anúncios da conta e pedidos recebidos | Sim |
+| `/perfil` | Dados da conta e sair | Sim |
+| `/favoritos` e `/mensagens` | Ainda sem função ("em breve") | — |
+
+No celular, a navegação fica no menu inferior; a partir de 900 px de largura, vai para uma barra no topo. Se for publicar o front em um servidor, configure para que qualquer endereço sirva o `index.html` (as rotas são do React Router).
 
 ## Endpoints
 
