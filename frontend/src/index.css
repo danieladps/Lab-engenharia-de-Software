@@ -1,25 +1,42 @@
+/* Tokens visuais baseados nos protótipos do Figma. */
 :root {
-  font-family: 'DM Sans', sans-serif;
-  color: #17251e;
-  background: #fbfcf9;
+  --bg: #fbf7f2;
+  --surface: #ffffff;
+  --sunken: #f3ece4;
+  --ink: #2b1d15;
+  --muted: #86766b;
+  --line: #ede3d9;
+  --orange: #d9531e;
+  --orange-dark: #b8441a;
+  --orange-soft: #fdebe1;
+  --teal: #2a9d8f;
+  --teal-soft: #e0f3f0;
+  --danger: #b3261e;
+  --serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --sans: 'Nunito', 'Segoe UI', system-ui, sans-serif;
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --radius-sm: 10px;
+  --nav-height: 68px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  font-family: var(--sans);
+  color: var(--ink);
+  background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  --ink: #17251e;
-  --muted: #69746d;
-  --green: #315e49;
-  --green-dark: #204533;
-  --mint: #e4efe5;
-  --line: #e5eae4;
-  --paper: #fbfcf9;
-  --coral: #da7659;
-  --serif: 'Fraunces', Georgia, serif;
-  font-weight: 400;
 }
 
 * { box-sizing: border-box; }
-body { margin: 0; min-width: 320px; min-height: 100vh; }
-button, input, select, textarea { font: inherit; }
+body { margin: 0; min-width: 320px; min-height: 100vh; background: var(--bg); }
+button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
-button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid #d99870; outline-offset: 3px; }
-::selection { color: var(--ink); background: #d8e8d9; }
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid #f0a273; outline-offset: 2px; }
+::selection { background: var(--orange-soft); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

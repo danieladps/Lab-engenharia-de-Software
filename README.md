@@ -9,7 +9,7 @@ Aplicação web para aproximar pessoas interessadas em adotar de responsáveis p
 
 ## Tecnologias
 
-- **Front-end:** React, Vite, Axios e Lucide React.
+- **Front-end:** React, Vite, React Router, Axios e Lucide React. Layout mobile-first baseado nos protótipos do Figma.
 - **Back-end:** Python, FastAPI, SQLAlchemy, Pydantic e PyJWT (login com token).
 - **Banco de dados:** SQLite, com migrações versionadas pelo Alembic.
 
