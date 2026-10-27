@@ -179,7 +179,7 @@
   .form-grid { grid-template-columns: 1fr; }
   .full-field { grid-column: auto; }
 }
-/* Área do responsável (UC03) */
+/* Área do responsável: Meus anúncios */
 .manage-page { min-height: 60vh; }
 .back-link { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 18px; padding: 0; border: 0; background: none; color: var(--green); font-size: 13px; font-weight: 600; cursor: pointer; }
 .manage-pet { margin: 0 0 22px; flex-wrap: wrap; }
@@ -193,10 +193,10 @@
 .interest-head time { color: var(--muted); font-size: 11px; }
 .interest-email { display: inline-flex; align-items: center; gap: 6px; margin-top: 6px; color: var(--green); font-size: 13px; word-break: break-all; }
 .interest-card p { margin: 10px 0 0; color: var(--ink); font-size: 13px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
-.copy-field { display: flex; gap: 8px; }
-.copy-field input { flex: 1; min-width: 0; }
-.hint { display: flex; align-items: center; gap: 6px; margin: 0; color: var(--muted); font-size: 11px; }
-@media (max-width: 650px) {
-  .copy-field { flex-direction: column; }
-}
+.hint { display: flex; align-items: center; gap: 6px; margin: 0; color: var(--muted); font-size: 11px; flex-wrap: wrap; }
+.my-pet-block { padding-bottom: 26px; margin-bottom: 26px; border-bottom: 1px solid var(--line); }
+.my-pet-block:last-child { border-bottom: 0; }
+/* Login e cadastro */
+.auth-tabs { margin-bottom: 16px; }
+.auth-tabs .species-option { flex: 1; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }
