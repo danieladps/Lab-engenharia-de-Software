@@ -2,9 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.api.deps import get_current_user
 from app.db.session import get_db
-from app.models import Pet
-from app.schemas import PetCreate, PetCreated, PetRead
+from app.models import Pet, User
+from app.schemas import PetCreate, PetRead
 
 router = APIRouter(prefix="/pets", tags=["Adoção"])
 
@@ -26,9 +27,13 @@ def list_pets(
     return db.scalars(query.order_by(Pet.created_at.desc())).all()
 
 
-@router.post("", response_model=PetCreated, status_code=status.HTTP_201_CREATED)
-def create_pet(payload: PetCreate, db: Session = Depends(get_db)):
-    pet = Pet(**payload.model_dump())
+@router.post("", response_model=PetRead, status_code=status.HTTP_201_CREATED)
+def create_pet(
+    payload: PetCreate,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    pet = Pet(**payload.model_dump(), owner_id=user.id)
     db.add(pet)
     db.commit()
     db.refresh(pet)

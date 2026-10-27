@@ -1,7 +1,6 @@
-import secrets
 from datetime import datetime, timezone
 
-from sqlalchemy import CheckConstraint, DateTime, Integer, String, Text
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -16,6 +15,7 @@ class Pet(Base):
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    owner_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     name: Mapped[str] = mapped_column(String(100))
     species: Mapped[str] = mapped_column(String(30))
     breed: Mapped[str] = mapped_column(String(100))
@@ -24,11 +24,9 @@ class Pet(Base):
     city: Mapped[str] = mapped_column(String(100))
     description: Mapped[str] = mapped_column(Text)
     image_url: Mapped[str] = mapped_column(String(500))
+    # Nome exibido no anúncio (a pessoa ou o abrigo responsável).
     donor_name: Mapped[str] = mapped_column(String(120))
-    # Código secreto que permite ao responsável consultar os interesses recebidos (MVP sem login).
-    manage_token: Mapped[str] = mapped_column(
-        String(64), unique=True, index=True, default=lambda: secrets.token_urlsafe(24)
-    )
     status: Mapped[str] = mapped_column(String(30), default="available", index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    owner: Mapped["User"] = relationship(back_populates="pets")
     adoptions: Mapped[list["Adoption"]] = relationship(back_populates="pet", cascade="all, delete-orphan")

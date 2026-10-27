@@ -3,6 +3,35 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+EMAIL_PATTERN = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
+
+
+class UserCreate(BaseModel):
+    name: str = Field(min_length=2, max_length=120)
+    email: str = Field(min_length=5, max_length=255, pattern=EMAIL_PATTERN)
+    password: str = Field(min_length=8, max_length=128)
+    city: str = Field(min_length=2, max_length=100)
+
+
+class LoginRequest(BaseModel):
+    email: str = Field(min_length=5, max_length=255)
+    password: str = Field(min_length=1, max_length=128)
+
+
+class UserRead(BaseModel):
+    id: int
+    name: str
+    email: str
+    city: str
+    created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: Literal["bearer"] = "bearer"
+    user: UserRead
+
 
 class PetCreate(BaseModel):
     name: str = Field(min_length=2, max_length=100)
@@ -32,19 +61,7 @@ class PetRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class PetCreated(PetRead):
-    """Resposta da publicação: inclui o código de gerenciamento, exibido só uma vez."""
-
-    manage_token: str
-
-
 class AdoptionCreate(BaseModel):
-    applicant_name: str = Field(min_length=2, max_length=120)
-    applicant_email: str = Field(
-        min_length=5,
-        max_length=255,
-        pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$",
-    )
     message: str = Field(min_length=10, max_length=2000)
 
 

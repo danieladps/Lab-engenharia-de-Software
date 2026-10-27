@@ -1,31 +1,17 @@
 import { useEffect, useState } from 'react'
 import {
-  ArrowLeft, ArrowRight, Check, ChevronDown, Copy, Heart, Inbox, KeyRound, LoaderCircle, Mail,
-  MapPin, PawPrint, Plus, Search, ShieldCheck, Sparkles, X,
+  ArrowLeft, ArrowRight, Check, ChevronDown, Heart, Inbox, LoaderCircle, LogIn, LogOut, Mail,
+  MapPin, PawPrint, Plus, Search, ShieldCheck, Sparkles, UserPlus, X,
 } from 'lucide-react'
-import api from './api'
+import api, { hasToken, saveToken } from './api'
 import './App.css'
 
 const speciesOptions = ['Todos', 'Cão', 'Gato', 'Outro']
 const sizeLabels = { small: 'Pequeno', medium: 'Médio', large: 'Grande' }
 const statusLabels = { available: 'Disponível', adoption_pending: 'Interesse recebido' }
-const MANAGE_PREFIX = '#gerenciar/'
+const MY_PETS_HASH = '#meus-anuncios'
 
-function tokenFromHash() {
-  const { hash } = window.location
-  return hash.startsWith(MANAGE_PREFIX) ? decodeURIComponent(hash.slice(MANAGE_PREFIX.length)) : ''
-}
-
-function manageLink(token) {
-  return `${window.location.origin}${window.location.pathname}${MANAGE_PREFIX}${token}`
-}
-
-// Aceita tanto o link completo quanto só o código colado pelo responsável.
-function extractToken(value) {
-  const text = value.trim()
-  const index = text.indexOf(MANAGE_PREFIX)
-  return index >= 0 ? text.slice(index + MANAGE_PREFIX.length) : text
-}
+const isMyPetsHash = () => window.location.hash === MY_PETS_HASH
 
 function App() {
   const [petResults, setPetResults] = useState({ filterKey: null, items: [], error: '' })
@@ -34,7 +20,9 @@ function App() {
   const [modal, setModal] = useState(null)
   const [notice, setNotice] = useState('')
   const [busy, setBusy] = useState(false)
-  const [manageToken, setManageToken] = useState(tokenFromHash)
+  const [showMyPets, setShowMyPets] = useState(isMyPetsHash)
+  // undefined = conferindo o login salvo; null = sem login.
+  const [user, setUser] = useState(() => (hasToken() ? undefined : null))
   const filterKey = JSON.stringify(filters)
   const currentResults = petResults.filterKey === filterKey ? petResults : null
   const pets = currentResults?.items ?? []
@@ -63,10 +51,42 @@ function App() {
   }, [filterKey])
 
   useEffect(() => {
-    const syncToken = () => setManageToken(tokenFromHash())
-    window.addEventListener('hashchange', syncToken)
-    return () => window.removeEventListener('hashchange', syncToken)
+    const syncHash = () => setShowMyPets(isMyPetsHash())
+    window.addEventListener('hashchange', syncHash)
+    return () => window.removeEventListener('hashchange', syncHash)
   }, [])
+
+  useEffect(() => {
+    if (user !== undefined) return undefined
+    let active = true
+    api.get('/auth/me')
+      .then(({ data }) => { if (active) setUser(data) })
+      .catch(() => {
+        saveToken(null)
+        if (active) setUser(null)
+      })
+    return () => { active = false }
+  }, [user])
+
+  // Abre a ação pedida ou, se a pessoa não entrou, o login antes dela.
+  function requireLogin(next) {
+    setModal(user ? next : { type: 'login', next })
+  }
+
+  function handleLoggedIn(data, next) {
+    saveToken(data.access_token)
+    setUser(data.user)
+    setModal(next ?? null)
+    if (!next) setNotice(`Olá, ${data.user.name.split(' ')[0]}! Você entrou na sua conta.`)
+  }
+
+  function logout() {
+    saveToken(null)
+    setUser(null)
+    setModal(null)
+    if (isMyPetsHash()) leaveMyPetsPage()
+    setNotice('Você saiu da sua conta.')
+  }
 
   useEffect(() => {
     if (!notice) return undefined
@@ -81,13 +101,13 @@ function App() {
     setBusy(true)
     try {
       const { data: createdPet } = await api.post('/pets', payload)
-      setModal({ type: 'created', pet: createdPet })
-      const { manage_token: _token, ...publicPet } = createdPet
+      setModal(null)
+      setNotice(`${createdPet.name} foi publicado! Veja os interesses em "Meus anúncios".`)
       if ((filters.species === 'Todos' || filters.species === createdPet.species)
         && (filters.size === 'Todos' || filters.size === createdPet.size)
         && (!filters.city || createdPet.city.toLowerCase().includes(filters.city.toLowerCase()))) {
         setPetResults((current) => current.filterKey === filterKey
-          ? { ...current, items: [publicPet, ...current.items] }
+          ? { ...current, items: [createdPet, ...current.items] }
           : current)
       }
     } catch (error) {
@@ -102,11 +122,7 @@ function App() {
     const form = new FormData(event.currentTarget)
     setBusy(true)
     try {
-      await api.post(`/pets/${modal.pet.id}/adoptions`, {
-        applicant_name: form.get('applicant_name'),
-        applicant_email: form.get('applicant_email'),
-        message: form.get('message'),
-      })
+      await api.post(`/pets/${modal.pet.id}/adoptions`, { message: form.get('message') })
       setPetResults((current) => current.filterKey === filterKey
         ? { ...current, items: current.items.filter((pet) => pet.id !== modal.pet.id) }
         : current)
@@ -119,15 +135,18 @@ function App() {
     }
   }
 
-  function openManagePage(token) {
-    setModal(null)
-    window.location.hash = `${MANAGE_PREFIX.slice(1)}${encodeURIComponent(token)}`
+  function openMyPetsPage() {
+    if (!user) {
+      setModal({ type: 'login' })
+      return
+    }
+    window.location.hash = MY_PETS_HASH.slice(1)
     window.scrollTo(0, 0)
   }
 
-  function leaveManagePage() {
+  function leaveMyPetsPage() {
     window.location.hash = 'pets'
-    setManageToken('')
+    setShowMyPets(false)
   }
 
   return (
@@ -138,18 +157,36 @@ function App() {
           <span>petlume<span className="brand-period">.</span></span>
         </a>
         <nav className="main-nav" aria-label="Navegação principal">
-          <a className={manageToken ? 'nav-link' : 'nav-link active'} href="#pets"><span className="nav-long">Encontrar um pet</span><span className="nav-short">Pets</span></a>
-          <button className={manageToken ? 'nav-link active' : 'nav-link'} onClick={() => setModal({ type: 'access' })}>Meu anúncio</button>
+          <a className={showMyPets ? 'nav-link' : 'nav-link active'} href="#pets"><span className="nav-long">Encontrar um pet</span><span className="nav-short">Pets</span></a>
+          <button className={showMyPets ? 'nav-link active' : 'nav-link'} onClick={openMyPetsPage}><span className="nav-long">Meus anúncios</span><span className="nav-short">Meus</span></button>
         </nav>
         <div className="account-actions">
-          <button className="button button-dark button-small" onClick={() => setModal({ type: 'pet' })}>
+          {user ? (
+            <button className="button button-light button-small" onClick={logout} title={`Sair da conta de ${user.name}`}>
+              <LogOut size={15} /> <span className="nav-long">Sair</span>
+            </button>
+          ) : (
+            <button className="button button-light button-small" onClick={() => setModal({ type: 'login' })} disabled={user === undefined}>
+              <LogIn size={15} /> <span className="nav-long">Entrar</span>
+            </button>
+          )}
+          <button className="button button-dark button-small" onClick={() => requireLogin({ type: 'pet' })}>
             <Plus size={15} /> Anunciar pet
           </button>
         </div>
       </header>
 
-      {manageToken ? (
-        <ManagePage key={manageToken} token={manageToken} onBack={leaveManagePage} />
+      {showMyPets && user ? (
+        <MyPetsPage key={user.id} onBack={leaveMyPetsPage} />
+      ) : showMyPets && user === null ? (
+        <main className="content-section manage-page">
+          <div className="empty-state">
+            <span className="empty-paw"><LogIn size={28} /></span>
+            <h3>Entre para ver seus anúncios</h3>
+            <p>Os anúncios e os interesses recebidos ficam na sua conta.</p>
+            <button className="button button-dark" onClick={() => setModal({ type: 'login' })}><LogIn size={16} /> Entrar</button>
+          </div>
+        </main>
       ) : (
       <main>
         <section className="hero" id="inicio">
@@ -161,7 +198,7 @@ function App() {
               <button className="button button-dark" onClick={() => document.getElementById('pets')?.scrollIntoView({ behavior: 'smooth' })}>
                 Encontrar meu pet <ArrowRight size={17} />
               </button>
-              <button className="button button-light" onClick={() => setModal({ type: 'pet' })}>
+              <button className="button button-light" onClick={() => requireLogin({ type: 'pet' })}>
                 <Plus size={17} /> Quero anunciar um pet
               </button>
             </div>
@@ -217,13 +254,13 @@ function App() {
           {loading ? (
             <div className="loading-state"><LoaderCircle className="spin" size={24} /> Encontrando novos amigos...</div>
           ) : pets.length ? (
-            <div className="pet-grid">{pets.map((pet, index) => <PetCard key={pet.id} pet={pet} index={index} onAdopt={() => setModal({ type: 'adoption', pet })} />)}</div>
+            <div className="pet-grid">{pets.map((pet, index) => <PetCard key={pet.id} pet={pet} index={index} onAdopt={() => requireLogin({ type: 'adoption', pet })} />)}</div>
           ) : !loadError ? (
             <div className="empty-state">
               <span className="empty-paw"><PawPrint size={28} /></span>
               <h3>Nenhum pet por aqui ainda</h3>
               <p>Tente outra cidade ou volte em breve. Novos amigos aparecem por aqui todos os dias.</p>
-              <button className="button button-dark" onClick={() => setModal({ type: 'pet' })}><Plus size={16} /> Publicar um anúncio</button>
+              <button className="button button-dark" onClick={() => requireLogin({ type: 'pet' })}><Plus size={16} /> Publicar um anúncio</button>
             </div>
           ) : null}
         </section>
@@ -242,10 +279,9 @@ function App() {
       {notice && <div className="toast" role="status"><Check size={17} />{notice}<button onClick={() => setNotice('')} aria-label="Fechar aviso"><X size={15} /></button></div>}
       {modal && (
         <Modal onClose={() => setModal(null)}>
-          {modal.type === 'pet' && <PetForm busy={busy} onSubmit={handlePetSubmit} onClose={() => setModal(null)} />}
-          {modal.type === 'adoption' && <AdoptionForm pet={modal.pet} busy={busy} onSubmit={handleAdoptionSubmit} onClose={() => setModal(null)} />}
-          {modal.type === 'created' && <CreatedNotice pet={modal.pet} onOpen={() => openManagePage(modal.pet.manage_token)} onClose={() => setModal(null)} />}
-          {modal.type === 'access' && <AccessForm onSubmit={openManagePage} onClose={() => setModal(null)} />}
+          {modal.type === 'login' && <AuthForm next={modal.next} onDone={handleLoggedIn} onClose={() => setModal(null)} />}
+          {modal.type === 'pet' && user && <PetForm user={user} busy={busy} onSubmit={handlePetSubmit} onClose={() => setModal(null)} />}
+          {modal.type === 'adoption' && user && <AdoptionForm user={user} pet={modal.pet} busy={busy} onSubmit={handleAdoptionSubmit} onClose={() => setModal(null)} />}
         </Modal>
       )}
     </div>
@@ -293,18 +329,66 @@ function ModalHeading({ eyebrow, title, subtitle, onClose }) {
   )
 }
 
-function PetForm({ busy, onSubmit, onClose }) {
+function AuthForm({ next, onDone, onClose }) {
+  const [mode, setMode] = useState('login')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  const isLogin = mode === 'login'
+
+  async function handleSubmit(event) {
+    event.preventDefault()
+    const payload = Object.fromEntries(new FormData(event.currentTarget).entries())
+    setBusy(true)
+    setError('')
+    try {
+      const { data } = await api.post(isLogin ? '/auth/login' : '/auth/cadastro', payload)
+      onDone(data, next)
+    } catch (err) {
+      const detail = err.response?.data?.detail
+      setError(typeof detail === 'string' ? detail : 'Confira os dados e tente de novo.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <>
+      <ModalHeading
+        eyebrow={next ? 'Antes de continuar' : 'Sua conta'}
+        title={isLogin ? 'Entre na sua conta' : 'Crie sua conta'}
+        subtitle={isLogin ? 'Para anunciar pets e demonstrar interesse.' : 'Leva menos de um minuto.'}
+        onClose={onClose}
+      />
+      <div className="species-filter auth-tabs" role="tablist" aria-label="Entrar ou criar conta">
+        <button role="tab" aria-selected={isLogin} className={isLogin ? 'species-option selected' : 'species-option'} onClick={() => { setMode('login'); setError('') }}>Entrar</button>
+        <button role="tab" aria-selected={!isLogin} className={!isLogin ? 'species-option selected' : 'species-option'} onClick={() => { setMode('register'); setError('') }}>Criar conta</button>
+      </div>
+      <form key={mode} className="form-stack" onSubmit={handleSubmit}>
+        {!isLogin && <label>Nome<input name="name" autoComplete="name" required minLength="2" maxLength="120" /></label>}
+        <label>E-mail<input name="email" type="email" autoComplete="email" required minLength="5" maxLength="255" /></label>
+        <label>Senha<input name="password" type="password" autoComplete={isLogin ? 'current-password' : 'new-password'} required minLength={isLogin ? 1 : 8} maxLength="128" />{!isLogin && <small className="hint">Mínimo de 8 caracteres.</small>}</label>
+        {!isLogin && <label>Cidade<input name="city" autoComplete="address-level2" placeholder="Ex.: São Paulo" required minLength="2" maxLength="100" /></label>}
+        {error && <div className="inline-error" role="alert">{error}</div>}
+        <button className="button button-dark form-submit" disabled={busy}>
+          {busy ? <LoaderCircle className="spin" size={18} /> : isLogin ? <LogIn size={17} /> : <UserPlus size={17} />} {isLogin ? 'Entrar' : 'Criar conta'}
+        </button>
+      </form>
+    </>
+  )
+}
+
+function PetForm({ user, busy, onSubmit, onClose }) {
   return (
     <>
       <ModalHeading eyebrow="Um novo encontro" title="Conte sobre o pet" subtitle="Uma boa história ajuda a encontrar a família certa." onClose={onClose} />
       <form className="form-stack form-grid" onSubmit={onSubmit}>
-        <label>Seu nome<input name="donor_name" placeholder="Ex.: Casa Amora" required minLength="2" maxLength="120" /></label>
+        <label>Nome exibido no anúncio<input name="donor_name" defaultValue={user.name} placeholder="Você ou o abrigo" required minLength="2" maxLength="120" /></label>
         <label>Nome do pet<input name="name" placeholder="Ex.: Nina" required minLength="2" /></label>
         <label>Espécie<select name="species" defaultValue="Cão"><option>Cão</option><option>Gato</option><option>Outro</option></select></label>
         <label>Raça<input name="breed" placeholder="Ex.: Sem raça definida" required minLength="2" /></label>
         <label>Porte<select name="size" defaultValue="medium"><option value="small">Pequeno</option><option value="medium">Médio</option><option value="large">Grande</option></select></label>
         <label>Idade (anos)<input name="age_years" type="number" min="0" max="30" defaultValue="1" required /></label>
-        <label>Cidade<input name="city" placeholder="Ex.: São Paulo, SP" required minLength="2" /></label>
+        <label>Cidade<input name="city" defaultValue={user.city} placeholder="Ex.: São Paulo, SP" required minLength="2" /></label>
         <label className="full-field">Foto do pet (URL)<input name="image_url" type="url" placeholder="https://..." required /></label>
         <label className="full-field">Um pouco sobre ele<textarea name="description" rows="3" placeholder="Conte sobre a personalidade, saúde e rotina do pet." required minLength="10" maxLength="2000" /></label>
         <button className="button button-dark form-submit full-field" disabled={busy}>{busy ? <LoaderCircle className="spin" size={18} /> : <Plus size={17} />} Publicar anúncio</button>
@@ -313,14 +397,13 @@ function PetForm({ busy, onSubmit, onClose }) {
   )
 }
 
-function AdoptionForm({ pet, busy, onSubmit, onClose }) {
+function AdoptionForm({ user, pet, busy, onSubmit, onClose }) {
   return (
     <>
-      <ModalHeading eyebrow={`Conheça ${pet.name}`} title="Dê o primeiro passo" subtitle="Deixe um contato para que o responsável pelo pet possa falar com você." onClose={onClose} />
+      <ModalHeading eyebrow={`Conheça ${pet.name}`} title="Dê o primeiro passo" subtitle="O responsável vai receber seu nome e e-mail para falar com você." onClose={onClose} />
       <div className="modal-pet"><img src={pet.image_url} alt="" /><span><strong>{pet.name}</strong><small><MapPin size={13} /> {pet.city}</small></span></div>
       <form className="form-stack" onSubmit={onSubmit}>
-        <label>Seu nome<input name="applicant_name" autoComplete="name" required minLength="2" maxLength="120" /></label>
-        <label>Seu e-mail<input name="applicant_email" type="email" autoComplete="email" required minLength="5" maxLength="255" /></label>
+        <p className="hint"><Mail size={14} /> Enviando como <strong>{user.name}</strong> ({user.email})</p>
         <label>Mensagem<textarea name="message" rows="4" minLength="10" maxLength="2000" placeholder="Fale um pouco sobre você, sua casa e os cuidados que pode oferecer." required /></label>
         <button className="button button-dark form-submit" disabled={busy}>{busy ? <LoaderCircle className="spin" size={18} /> : <Heart size={17} />} Enviar interesse</button>
       </form>
@@ -328,104 +411,55 @@ function AdoptionForm({ pet, busy, onSubmit, onClose }) {
   )
 }
 
-function CreatedNotice({ pet, onOpen, onClose }) {
-  const [copied, setCopied] = useState(false)
-  const link = manageLink(pet.manage_token)
-
-  async function copyLink() {
-    try {
-      await navigator.clipboard.writeText(link)
-      setCopied(true)
-    } catch {
-      setCopied(false)
-    }
-  }
-
-  return (
-    <>
-      <ModalHeading eyebrow="Anúncio publicado" title={`${pet.name} já está na vitrine`} subtitle="Guarde este link: é por ele que você vai ver quem se interessou. Ele não será mostrado de novo." onClose={onClose} />
-      <div className="form-stack">
-        <label>Seu link de gerenciamento
-          <span className="copy-field">
-            <input readOnly value={link} onFocus={(event) => event.target.select()} aria-label="Link de gerenciamento" />
-            <button type="button" className="button button-light button-small" onClick={copyLink}>
-              {copied ? <Check size={15} /> : <Copy size={15} />} {copied ? 'Copiado' : 'Copiar'}
-            </button>
-          </span>
-        </label>
-        <p className="hint"><KeyRound size={14} /> Quem tiver este link vê os contatos dos interessados. Não compartilhe.</p>
-        <button className="button button-dark form-submit" onClick={onOpen}><Inbox size={17} /> Ver interesses recebidos</button>
-      </div>
-    </>
-  )
-}
-
-function AccessForm({ onSubmit, onClose }) {
-  return (
-    <>
-      <ModalHeading eyebrow="Para quem anunciou" title="Acesse seu anúncio" subtitle="Cole o link ou o código que apareceu quando você publicou o pet." onClose={onClose} />
-      <form className="form-stack" onSubmit={(event) => {
-        event.preventDefault()
-        const token = extractToken(new FormData(event.currentTarget).get('token') || '')
-        if (token) onSubmit(token)
-      }}>
-        <label>Link ou código<input name="token" required minLength="10" autoComplete="off" placeholder="https://.../#gerenciar/..." /></label>
-        <button className="button button-dark form-submit"><KeyRound size={17} /> Ver meu anúncio</button>
-      </form>
-    </>
-  )
-}
-
-function ManagePage({ token, onBack }) {
-  const [state, setState] = useState({ loading: true, data: null, error: '' })
+function MyPetsPage({ onBack }) {
+  const [state, setState] = useState({ loading: true, items: [], error: '' })
 
   useEffect(() => {
     let active = true
-    api.get(`/manage/${encodeURIComponent(token)}`)
-      .then(({ data }) => { if (active) setState({ loading: false, data, error: '' }) })
-      .catch((error) => {
-        if (active) {
-          setState({
-            loading: false,
-            data: null,
-            error: error.response?.status === 404
-              ? 'Não encontramos um anúncio com este link. Confira se ele foi copiado inteiro.'
-              : 'Não foi possível carregar o anúncio. Confira se a API está ativa.',
-          })
-        }
+    api.get('/me/pets')
+      .then(({ data }) => { if (active) setState({ loading: false, items: data, error: '' }) })
+      .catch(() => {
+        if (active) setState({ loading: false, items: [], error: 'Não foi possível carregar seus anúncios. Confira se a API está ativa.' })
       })
     return () => { active = false }
-  }, [token])
+  }, [])
 
-  const { loading, data, error } = state
+  const { loading, items, error } = state
 
   return (
     <main className="content-section manage-page">
       <button className="back-link" onClick={onBack}><ArrowLeft size={16} /> Voltar para os pets</button>
       <div className="section-heading">
-        <div><span className="eyebrow eyebrow-muted">Área do responsável</span><h2>Interesses recebidos<span className="brand-period">.</span></h2></div>
+        <div><span className="eyebrow eyebrow-muted">Área do responsável</span><h2>Meus anúncios<span className="brand-period">.</span></h2></div>
       </div>
-      {loading && <div className="loading-state"><LoaderCircle className="spin" size={24} /> Carregando seu anúncio...</div>}
+      {loading && <div className="loading-state"><LoaderCircle className="spin" size={24} /> Carregando seus anúncios...</div>}
       {error && <div className="inline-error">{error}</div>}
-      {data && (
-        <>
+      {!loading && !error && !items.length && (
+        <div className="empty-state">
+          <span className="empty-paw"><PawPrint size={28} /></span>
+          <h3>Você ainda não anunciou nenhum pet</h3>
+          <p>Use o botão "Anunciar pet" no topo da página.</p>
+        </div>
+      )}
+      {items.map(({ pet, adoptions }) => (
+        <section key={pet.id} className="my-pet-block">
           <div className="modal-pet manage-pet">
-            <img src={data.pet.image_url} alt="" />
+            <img src={pet.image_url} alt="" />
             <span>
-              <strong>{data.pet.name}</strong>
-              <small><MapPin size={13} /> {data.pet.city} · {sizeLabels[data.pet.size]}</small>
+              <strong>{pet.name}</strong>
+              <small><MapPin size={13} /> {pet.city} · {sizeLabels[pet.size]}</small>
             </span>
-            <span className={`status-pill status-${data.pet.status}`}>{statusLabels[data.pet.status] ?? data.pet.status}</span>
+            <span className={`status-pill status-${pet.status}`}>{statusLabels[pet.status] ?? pet.status}</span>
           </div>
-          {data.adoptions.length ? (
+          {adoptions.length ? (
             <ul className="interest-list">
-              {data.adoptions.map((adoption) => (
+              {adoptions.map((adoption) => (
                 <li key={adoption.id} className="interest-card">
                   <div className="interest-head">
                     <strong>{adoption.applicant_name}</strong>
                     <time dateTime={adoption.created_at}>{new Date(adoption.created_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</time>
                   </div>
-                  <a className="interest-email" href={`mailto:${adoption.applicant_email}?subject=${encodeURIComponent(`Adoção de ${data.pet.name}`)}`}>
+                  <a className="interest-email" href={`mailto:${adoption.applicant_email}?subject=${encodeURIComponent(`Adoção de ${pet.name}`)}`}>
                     <Mail size={14} /> {adoption.applicant_email}
                   </a>
                   <p>{adoption.message}</p>
@@ -433,14 +467,10 @@ function ManagePage({ token, onBack }) {
               ))}
             </ul>
           ) : (
-            <div className="empty-state">
-              <span className="empty-paw"><Inbox size={28} /></span>
-              <h3>Nenhum interesse ainda</h3>
-              <p>Assim que alguém demonstrar interesse em {data.pet.name}, o contato aparece aqui.</p>
-            </div>
+            <p className="hint"><Inbox size={14} /> Nenhum interesse em {pet.name} ainda.</p>
           )}
-        </>
-      )}
+        </section>
+      ))}
     </main>
   )
 }
