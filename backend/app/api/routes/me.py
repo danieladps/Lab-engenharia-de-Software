@@ -20,18 +20,38 @@ def my_pets(user: User = Depends(get_current_user), db: Session = Depends(get_db
         .where(Pet.owner_id == user.id)
         .order_by(Pet.created_at.desc())
     ).all()
-    return [{"pet": pet, "adoptions": pet.adoptions} for pet in pets]
+    # Pedidos em aberto primeiro; depois os respondidos, do mais recente para o mais antigo.
+    def order(adoption):
+        return (adoption.status != "pending", -adoption.created_at.timestamp())
+
+    return [{"pet": pet, "adoptions": sorted(pet.adoptions, key=order)} for pet in pets]
 
 
 @router.get("/adoptions", response_model=list[MyAdoption])
 def my_adoptions(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Pedidos de adoção que o usuário logado enviou."""
-    return db.scalars(
+    adoptions = db.scalars(
         select(Adoption)
-        .options(selectinload(Adoption.pet))
+        .options(selectinload(Adoption.pet).selectinload(Pet.owner))
         .where(Adoption.user_id == user.id)
-        .order_by(Adoption.created_at.desc())
+        .order_by(Adoption.created_at.desc(), Adoption.id.desc())
     ).all()
+    return [
+        {
+            "id": adoption.id,
+            "message": adoption.message,
+            "status": adoption.status,
+            "created_at": adoption.created_at,
+            "decided_at": adoption.decided_at,
+            "pet": adoption.pet,
+            "owner_contact": (
+                {"name": adoption.pet.donor_name, "email": adoption.pet.owner.email}
+                if adoption.status == "approved"
+                else None
+            ),
+        }
+        for adoption in adoptions
+    ]
 
 
 @router.get("/favorites", response_model=list[PetRead])

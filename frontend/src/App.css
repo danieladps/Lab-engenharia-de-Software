@@ -214,6 +214,17 @@
 .page-lead { margin: 0 0 18px; color: var(--muted); font-size: 14px; }
 .my-requests { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
 .status-request-pending { background: #fff4d6; color: #8a5a00; }
+.status-request-approved, .status-adopted { background: var(--teal-soft); color: #1d6f65; }
+.status-request-rejected { background: var(--sunken); color: var(--muted); }
+.request-decided { background: #fdfbf8; }
+.decision-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+.request-result { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 14px; line-height: 1.5; }
+.request-approved { display: flex; gap: 10px; background: var(--teal-soft); color: #14524a; }
+.request-approved > svg { flex: none; margin-top: 2px; }
+.request-approved p { margin: 2px 0 4px; }
+.request-approved a { display: inline-flex; align-items: center; gap: 6px; color: #14524a; font-weight: 800; word-break: break-all; }
+.request-rejected { background: var(--sunken); color: var(--muted); }
+.sheet-text { margin: 0; font-size: 15px; line-height: 1.55; }
 .request-sent { display: grid; gap: 6px; padding: 12px 14px 14px; border-top: 1px solid var(--line); }
 .request-sent time { color: var(--muted); font-size: 12px; }
 .request-sent p { margin: 0; font-size: 14px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }

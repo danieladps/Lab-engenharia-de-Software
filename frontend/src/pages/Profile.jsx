@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ChevronRight, ClipboardList, Heart, LoaderCircle, LogIn, LogOut, MapPin, PawPrint, Pencil, Plus } from 'lucide-react'
+import { ChevronRight, ClipboardList, Heart, House, LoaderCircle, LogIn, LogOut, MapPin, PawPrint, Pencil, Plus } from 'lucide-react'
 import api from '../api'
 import EmptyState from '../components/EmptyState'
 import { useAuth } from '../lib/auth'
@@ -16,6 +16,19 @@ export default function Profile() {
   const [editing, setEditing] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const [requests, setRequests] = useState(null)
+
+  useEffect(() => {
+    if (!user) return undefined
+    let active = true
+    api.get('/me/adoptions')
+      .then(({ data }) => { if (active) setRequests(data) })
+      .catch(() => { if (active) setRequests(null) })
+    return () => { active = false }
+  }, [user])
+
+  const pendingCount = requests?.filter((item) => item.status === 'pending').length ?? 0
+  const adoptedCount = requests?.filter((item) => item.status === 'approved').length ?? 0
 
   if (!user) {
     return (
@@ -73,7 +86,8 @@ export default function Profile() {
           </form>
         ) : (
           <ul className="menu-list">
-            <li><Link to="/minhas-solicitacoes"><ClipboardList size={19} aria-hidden="true" /><span><strong>Minhas solicitações</strong><small>Pedidos de adoção que você enviou</small></span><ChevronRight size={18} aria-hidden="true" /></Link></li>
+            <li><Link to="/minhas-solicitacoes"><ClipboardList size={19} aria-hidden="true" /><span><strong>Minhas solicitações</strong><small>{requests ? `${pendingCount} em andamento` : 'Pedidos de adoção que você enviou'}</small></span><ChevronRight size={18} aria-hidden="true" /></Link></li>
+            <li><Link to="/minhas-solicitacoes"><House size={19} aria-hidden="true" /><span><strong>Pets adotados</strong><small>{requests ? `${adoptedCount} ${adoptedCount === 1 ? 'pet' : 'pets'}` : 'Pedidos aprovados'}</small></span><ChevronRight size={18} aria-hidden="true" /></Link></li>
             <li><Link to="/meus-anuncios"><PawPrint size={19} aria-hidden="true" /><span><strong>Meus anúncios</strong><small>Pets que você anunciou e pedidos recebidos</small></span><ChevronRight size={18} aria-hidden="true" /></Link></li>
             <li><Link to="/favoritos"><Heart size={19} aria-hidden="true" /><span><strong>Favoritos</strong><small>{loaded ? `${favorites.length} ${favorites.length === 1 ? 'pet salvo' : 'pets salvos'}` : 'Pets que você salvou'}</small></span><ChevronRight size={18} aria-hidden="true" /></Link></li>
             <li><Link to="/anunciar"><Plus size={19} aria-hidden="true" /><span><strong>Anunciar um pet</strong><small>Publique um pet para adoção</small></span><ChevronRight size={18} aria-hidden="true" /></Link></li>

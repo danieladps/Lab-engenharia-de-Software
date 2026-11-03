@@ -117,14 +117,25 @@ Todas as rotas usam o prefixo `/api`. As marcadas com 🔒 exigem `Authorization
 | `GET` | `/pets/{pet_id}` | Consulta os detalhes de um anúncio |
 | `POST` | `/pets` 🔒 | Publica um anúncio com `donor_name` e dados do pet |
 | `POST` | `/pets/{pet_id}/adoptions` 🔒 | Registra a mensagem de interesse |
+| `PATCH` | `/adoptions/{adoption_id}` 🔒 | O dono do anúncio responde um pedido em aberto com `{"status": "approved"}` ou `{"status": "rejected"}` |
 
 Uma solicitação só pode ser registrada para um pet disponível. Após o envio, o anúncio muda para `adoption_pending` e sai da busca pública.
+
+### Ciclo do pedido de adoção
+
+1. Alguém envia um pedido: o pedido fica **Aguardando resposta** (`pending`) e o pet sai da busca (**Pedido recebido**).
+2. O dono do anúncio responde em **Meus anúncios**:
+   - **Aprovar** (`approved`): o pet fica **Adotado** e não volta para a busca. Quem pediu passa a ver o e-mail do dono em **Minhas solicitações**, para combinarem a adoção.
+   - **Recusar** (`rejected`): o pet volta para a busca e pode receber pedido de outra pessoa.
+3. A resposta não pode ser desfeita, e só o dono do anúncio pode responder.
+
+Regras garantidas pelo banco: um pet tem no máximo um pedido em aberto ou aprovado, e cada pessoa pede cada pet uma única vez (mesmo depois de recusada).
 
 ### Login e privacidade
 
 O login devolve um token (JWT) que vale por `JWT_EXPIRE_MINUTES` (padrão: 1 dia). O front guarda o token no navegador e o envia em cada chamada; ao sair da conta, ele é apagado. Errar a senha e usar um e-mail sem conta dão a mesma mensagem, para não revelar quem está cadastrado.
 
-O e-mail de quem pediu um pet aparece **somente** para o dono daquele anúncio, em `/me/pets`. A busca pública e os detalhes do pet não mostram e-mail nem o id do dono. Favoritos e solicitações também são de cada conta: ninguém vê os de outra pessoa.
+O e-mail de quem pediu um pet aparece **somente** para o dono daquele anúncio, em `/me/pets`. A busca pública e os detalhes do pet não mostram e-mail nem o id do dono. Favoritos e solicitações também são de cada conta: ninguém vê os de outra pessoa. O e-mail do dono só aparece para quem teve o pedido aprovado.
 
 Se o login vencer com o site aberto, a próxima ação que precisa de login avisa "Seu login expirou" e a pessoa volta a aparecer como deslogada.
 

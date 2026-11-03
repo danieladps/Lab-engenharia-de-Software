@@ -107,7 +107,11 @@ export default function PetDetail() {
               <Heart size={18} aria-hidden="true" /> Quero adotar
             </button>
           ) : (
-            <p className="notice">{pet.name} já recebeu um pedido de adoção e não está aceitando novos.</p>
+            <p className="notice">
+              {pet.status === 'adopted'
+                ? `${pet.name} já foi adotado e encontrou uma família.`
+                : `${pet.name} já recebeu um pedido de adoção e não está aceitando novos agora.`}
+            </p>
           )}
           {available && !user && <p className="hint">Você vai precisar entrar na sua conta para enviar o pedido.</p>}
         </div>
