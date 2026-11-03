@@ -5,6 +5,7 @@ import api from '../api'
 import PetImage from '../components/PetImage'
 import Sheet from '../components/Sheet'
 import EmptyState from '../components/EmptyState'
+import FavoriteButton from '../components/FavoriteButton'
 import { useAuth } from '../lib/auth'
 import { useToast } from '../lib/toast'
 import { ageLabel, apiError, sizeLabels } from '../lib/pets'
@@ -46,8 +47,8 @@ export default function PetDetail() {
     setSendError('')
     try {
       await api.post(`/pets/${id}/adoptions`, { message: new FormData(event.currentTarget).get('message') })
-      toast(`Pedido enviado! ${state.pet.donor_name} vai receber seu contato.`)
-      navigate('/')
+      toast(`Pedido enviado! Acompanhe em "Minhas solicitações".`)
+      navigate('/minhas-solicitacoes')
     } catch (error) {
       setSendError(apiError(error, 'Não foi possível enviar o pedido.'))
     } finally {
@@ -75,6 +76,7 @@ export default function PetDetail() {
       <div className="detail-hero">
         <PetImage src={pet.image_url} alt={`Foto de ${pet.name}`} className="detail-photo" />
         <button type="button" className="icon-button detail-back" onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))} aria-label="Voltar"><ArrowLeft size={19} /></button>
+        <FavoriteButton pet={pet} className="detail-favorite" />
         <div className="detail-name">
           <h1>{pet.name}</h1>
           <p>{pet.breed}</p>

@@ -72,6 +72,10 @@ Todas as rotas usam o prefixo `/api`. As marcadas com 🔒 exigem o cabeçalho `
 | `POST` | `/auth/login` | Entra com e-mail e senha e devolve o token |
 | `GET` | `/auth/me` 🔒 | Dados da conta logada |
 | `GET` | `/me/pets` 🔒 | Anúncios da conta logada com os interesses recebidos |
+| `GET` | `/me/adoptions` 🔒 | Pedidos de adoção que a conta logada enviou |
+| `GET` | `/me/favorites` 🔒 | Pets salvos pela conta logada |
+| `PUT` / `DELETE` | `/me/favorites/{pet_id}` 🔒 | Salva ou remove um pet dos favoritos |
+| `PATCH` | `/auth/me` 🔒 | Edita nome e cidade da conta |
 | `GET` | `/pets` | Lista pets disponíveis; filtros `species`, `size` e `city` |
 | `GET` | `/pets/{pet_id}` | Exibe os dados de um anúncio |
 | `POST` | `/pets` 🔒 | Publica anúncio de pet |

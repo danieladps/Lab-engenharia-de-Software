@@ -27,6 +27,11 @@ class UserRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class UserUpdate(BaseModel):
+    name: str | None = Field(default=None, min_length=2, max_length=120)
+    city: str | None = Field(default=None, min_length=2, max_length=100)
+
+
 class TokenResponse(BaseModel):
     access_token: str
     token_type: Literal["bearer"] = "bearer"
@@ -79,3 +84,14 @@ class AdoptionRead(BaseModel):
 class PetManagement(BaseModel):
     pet: PetRead
     adoptions: list[AdoptionRead]
+
+
+class MyAdoption(BaseModel):
+    """Pedido feito pelo usuário logado, com o pet pedido."""
+
+    id: int
+    message: str
+    status: str
+    created_at: datetime
+    pet: PetRead
+    model_config = ConfigDict(from_attributes=True)

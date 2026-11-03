@@ -7,7 +7,7 @@ from app.api.deps import get_current_user
 from app.core.security import create_access_token, hash_password, verify_password
 from app.db.session import get_db
 from app.models import User
-from app.schemas import LoginRequest, TokenResponse, UserCreate, UserRead
+from app.schemas import LoginRequest, TokenResponse, UserCreate, UserRead, UserUpdate
 
 router = APIRouter(prefix="/auth", tags=["Conta"])
 
@@ -45,4 +45,14 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
 
 @router.get("/me", response_model=UserRead)
 def read_me(user: User = Depends(get_current_user)):
+    return user
+
+
+@router.patch("/me", response_model=UserRead)
+def update_me(payload: UserUpdate, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Edita nome e cidade. O e-mail não muda por aqui."""
+    for field, value in payload.model_dump(exclude_unset=True, exclude_none=True).items():
+        setattr(user, field, value.strip())
+    db.commit()
+    db.refresh(user)
     return user

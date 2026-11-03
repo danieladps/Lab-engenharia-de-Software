@@ -1,5 +1,6 @@
 export const sizeLabels = { small: 'Pequeno', medium: 'Médio', large: 'Grande' }
 export const statusLabels = { available: 'Disponível', adoption_pending: 'Pedido recebido' }
+export const adoptionStatusLabels = { pending: 'Aguardando resposta' }
 
 // Rótulo do filtro → valor de `species` na API.
 export const speciesChips = [

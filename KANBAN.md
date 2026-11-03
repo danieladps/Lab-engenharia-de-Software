@@ -23,12 +23,12 @@ O documento de requisitos lista os casos abaixo. UC01–UC03 são o recorte esco
 | UC-A4 | Visualizar perfil detalhado do pet | Concluído (PR feat/layout-figma): tela de detalhes em `/pets/:id`. |
 | UC-A5 | Solicitar adoção | Incluído em UC03 — concluído; o responsável consulta os interesses em Meus anúncios. |
 | UC-A6 | Aprovar/recusar solicitação de adoção | Planejado (PR feat/status-solicitacao). |
-| UC-A7 | Acompanhar status da adoção | Planejado (PR feat/status-solicitacao). |
+| UC-A7 | Acompanhar status da adoção | Em andamento: "Minhas solicitações" já lista os pedidos (PR feat/favoritos-perfil); aprovado/recusado chega no PR feat/status-solicitacao. |
 | UC-A8 | Avaliar processo de adoção | Fora do escopo desta sprint. |
-| UC-A9 | Favoritar pet | Planejado (PR feat/favoritos-perfil). |
+| UC-A9 | Favoritar pet | Concluído (PR feat/favoritos-perfil). |
 | UC-T1 | Cadastrar-se | Concluído (PR feat/auth). |
 | UC-T2 | Login/logout | Concluído (PR feat/auth). |
-| UC-T3 | Editar perfil | Planejado (PR feat/favoritos-perfil). |
+| UC-T3 | Editar perfil | Concluído (PR feat/favoritos-perfil): nome e cidade. |
 | UC-T4 | Receber notificações | Fora do escopo desta sprint. |
 | UC-T5 | Gerenciar usuários e permissões | Fora do escopo; MVP sem painel administrativo. |
 
@@ -41,6 +41,7 @@ O documento de requisitos lista os casos abaixo. UC01–UC03 são o recorte esco
 | Registrar evidências da demonstração e atualizar o quadro ao concluir as tarefas. | — | Testes automatizados da API, lint e build do front-end aprovados. |
 | — | — | Cadastro, login e logout; consulta dos interesses em Meus anúncios (UC03, UC-T1, UC-T2). |
 | — | — | Novo layout mobile-first dos protótipos do Figma, com tela de detalhes do pet (UC-A4). |
+| — | — | Favoritos, Minhas solicitações e edição de perfil (UC-A9, UC-T3). |
 
 ## Critérios para concluir a sprint
 

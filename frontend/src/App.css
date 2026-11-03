@@ -102,10 +102,25 @@
 .chip.selected { background: var(--orange); color: #fff; }
 
 .pet-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.pet-card { display: flex; flex-direction: column; overflow: hidden; border-radius: var(--radius-md); background: var(--surface); box-shadow: 0 1px 2px rgba(80, 40, 20, .08); text-decoration: none; }
-.pet-card:hover .pet-card-photo img { transform: scale(1.03); }
+.pet-card { position: relative; display: flex; flex-direction: column; overflow: hidden; border-radius: var(--radius-md); background: var(--surface); box-shadow: 0 1px 2px rgba(80, 40, 20, .08); text-decoration: none; }
+.pet-card-link { display: flex; flex: 1; flex-direction: column; color: inherit; text-decoration: none; }
+.pet-card-link:hover .pet-card-photo img { transform: scale(1.03); }
+.pet-card-link:focus-visible { outline-offset: -3px; border-radius: var(--radius-md); }
 .pet-card-photo { position: relative; aspect-ratio: 1 / 1; overflow: hidden; background: var(--sunken); }
-.pet-card-photo img, .pet-card-photo .pet-image-fallback { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
+.pet-card-photo img, .pet-card-photo .tag-pending { background: var(--sunken); color: var(--muted); }
+
+/* Coração de favorito */
+.favorite-button {
+  display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 50%;
+  background: rgba(255, 255, 255, .94); color: var(--ink); box-shadow: 0 1px 4px rgba(80, 40, 20, .18);
+  transition: transform .12s;
+}
+.favorite-button:active { transform: scale(.88); }
+.favorite-button.saved { color: var(--orange); }
+.favorite-button.saved svg { fill: var(--orange); }
+.card-favorite { position: absolute; top: 8px; right: 8px; z-index: 1; }
+.detail-favorite { position: absolute; top: 16px; right: 16px; z-index: 2; width: 42px; height: 42px; }
+.pet-image-fallback { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
 .species-badge { position: absolute; left: 8px; bottom: 8px; padding: 3px 10px; border-radius: 999px; color: #fff; font-size: 11px; font-weight: 800; }
 .species-dog { background: var(--orange); }
 .species-cat { background: var(--teal); }
@@ -183,7 +198,8 @@
 .my-pet-photo { flex: none; width: 58px; height: 58px; border-radius: var(--radius-sm); object-fit: cover; overflow: hidden; }
 .my-pet-name { flex: 1; display: grid; gap: 2px; min-width: 0; }
 .my-pet-name strong { font-family: var(--serif); font-size: 18px; font-weight: 600; }
-.my-pet-name small { display: flex; align-items: center; gap: 3px; color: var(--muted); font-size: 12px; }
+.my-pet-name small { display: flex; align-items: flex-start; gap: 3px; color: var(--muted); font-size: 12px; line-height: 1.35; }
+.my-pet-name small svg { flex: none; margin-top: 2px; }
 .status { flex: none; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; }
 .status-available { background: var(--teal-soft); color: #1d6f65; }
 .status-adoption_pending { background: var(--orange-soft); color: var(--orange-dark); }
@@ -195,6 +211,12 @@
 .requests a { display: inline-flex; align-items: center; gap: 6px; color: var(--orange); font-size: 14px; font-weight: 700; word-break: break-all; }
 .requests p { margin: 0; font-size: 14px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
 .my-pet-empty { padding: 0 14px 14px; }
+.page-lead { margin: 0 0 18px; color: var(--muted); font-size: 14px; }
+.my-requests { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.status-request-pending { background: #fff4d6; color: #8a5a00; }
+.request-sent { display: grid; gap: 6px; padding: 12px 14px 14px; border-top: 1px solid var(--line); }
+.request-sent time { color: var(--muted); font-size: 12px; }
+.request-sent p { margin: 0; font-size: 14px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
 
 /* ---------- Perfil ---------- */
 .profile-head { display: grid; justify-items: center; gap: 4px; padding: 36px 18px 30px; background: var(--orange); color: #fff; text-align: center; }
@@ -208,7 +230,11 @@
 .menu-list a > span, .menu-row > span { flex: 1; display: grid; gap: 2px; }
 .menu-list small { color: var(--muted); font-size: 12px; }
 .menu-list a > svg:last-child { color: var(--muted); }
-.menu-soon .menu-row { opacity: .6; }
+button.menu-row { width: 100%; font: inherit; text-align: left; cursor: pointer; }
+.menu-row > svg:last-child { flex: none; color: var(--muted); }
+.edit-profile { padding: 18px; border-radius: var(--radius-md); background: var(--surface); border: 1px solid var(--line); }
+.edit-profile h2 { margin: 0; font-family: var(--serif); font-size: 20px; font-weight: 600; }
+.form-actions { display: flex; justify-content: flex-end; gap: 10px; }
 
 /* ---------- Aviso flutuante ---------- */
 .toast-region { position: fixed; left: 0; right: 0; bottom: calc(var(--nav-height) + var(--safe-bottom) + 84px); z-index: 50; display: flex; justify-content: center; padding: 0 16px; pointer-events: none; }
