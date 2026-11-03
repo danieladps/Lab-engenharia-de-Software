@@ -89,7 +89,8 @@ As tabelas são criadas e alteradas **somente** por migração: `alembic upgrade
 | `/pets/:id` | Detalhes do pet e botão "Quero adotar" | Só para enviar o pedido |
 | `/entrar` e `/cadastro` | Entrar e criar conta | Não |
 | `/anunciar` | Formulário de anúncio | Sim |
-| `/meus-anuncios` | Anúncios da conta e pedidos recebidos | Sim |
+| `/meus-anuncios` | Anúncios da conta, pedidos recebidos, editar e remover | Sim |
+| `/meus-anuncios/:id/editar` | Editar um anúncio | Sim (só o dono) |
 | `/perfil` | Dados da conta, editar nome e cidade, sair | Sim |
 | `/favoritos` | Pets salvos com o coração | Sim |
 | `/minhas-solicitacoes` | Pedidos de adoção que você enviou e o status de cada um | Sim |
@@ -116,6 +117,8 @@ Todas as rotas usam o prefixo `/api`. As marcadas com 🔒 exigem `Authorization
 | `GET` | `/pets` | Lista pets disponíveis; aceita `species`, `size` e `city` |
 | `GET` | `/pets/{pet_id}` | Consulta os detalhes de um anúncio |
 | `POST` | `/pets` 🔒 | Publica um anúncio com `donor_name` e dados do pet |
+| `PATCH` | `/pets/{pet_id}` 🔒 | O dono edita qualquer dado do anúncio (os campos não enviados ficam iguais); o status não muda por aqui |
+| `DELETE` | `/pets/{pet_id}` 🔒 | O dono remove o anúncio; só vale para pets disponíveis |
 | `POST` | `/pets/{pet_id}/adoptions` 🔒 | Registra a mensagem de interesse |
 | `PATCH` | `/adoptions/{adoption_id}` 🔒 | O dono do anúncio responde um pedido em aberto com `{"status": "approved"}` ou `{"status": "rejected"}` |
 
@@ -128,6 +131,15 @@ Uma solicitação só pode ser registrada para um pet disponível. Após o envio
    - **Aprovar** (`approved`): o pet fica **Adotado** e não volta para a busca. Quem pediu passa a ver o e-mail do dono em **Minhas solicitações**, para combinarem a adoção.
    - **Recusar** (`rejected`): o pet volta para a busca e pode receber pedido de outra pessoa.
 3. A resposta não pode ser desfeita, e só o dono do anúncio pode responder.
+
+### Editar e remover anúncio
+
+Só o dono do anúncio edita ou remove; para as outras contas, o pet "não existe" (404). Para **remover**, o pet precisa estar disponível:
+
+- com pedido em aberto, é preciso aprovar ou recusar antes;
+- se já foi adotado, o anúncio fica, para não apagar o pedido aprovado de quem adotou.
+
+Ao remover, o pet sai da busca e dos favoritos de quem salvou, e os pedidos recusados dele são apagados junto.
 
 Regras garantidas pelo banco: um pet tem no máximo um pedido em aberto ou aprovado, e cada pessoa pede cada pet uma única vez (mesmo depois de recusada).
 

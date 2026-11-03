@@ -79,6 +79,8 @@ Todas as rotas usam o prefixo `/api`. As marcadas com 🔒 exigem o cabeçalho `
 | `GET` | `/pets` | Lista pets disponíveis; filtros `species`, `size` e `city` |
 | `GET` | `/pets/{pet_id}` | Exibe os dados de um anúncio |
 | `POST` | `/pets` 🔒 | Publica anúncio de pet |
+| `PATCH` | `/pets/{pet_id}` 🔒 | O dono edita o anúncio |
+| `DELETE` | `/pets/{pet_id}` 🔒 | O dono remove o anúncio (só se o pet estiver disponível) |
 | `POST` | `/pets/{pet_id}/adoptions` 🔒 | Registra interesse em um pet |
 | `PATCH` | `/adoptions/{adoption_id}` 🔒 | O dono do anúncio aprova (`approved`) ou recusa (`rejected`) um pedido |
 | `GET` | `/health` | Verifica a conexão com o banco |

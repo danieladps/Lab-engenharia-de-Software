@@ -217,6 +217,11 @@
 .status-request-approved, .status-adopted { background: var(--teal-soft); color: #1d6f65; }
 .status-request-rejected { background: var(--sunken); color: var(--muted); }
 .request-decided { background: #fdfbf8; }
+.pet-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 0 12px 12px; }
+.pet-actions .hint { font-size: 12px; }
+.button-danger { color: var(--danger); }
+.button-danger-solid { background: var(--danger); }
+.button-danger-solid:hover { background: #8f1e18; }
 .decision-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
 .request-result { margin: 0; padding: 12px 14px; border-top: 1px solid var(--line); font-size: 14px; line-height: 1.5; }
 .request-approved { display: flex; gap: 10px; background: var(--teal-soft); color: #14524a; }

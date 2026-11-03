@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, Inbox, LoaderCircle, Mail, MapPin, PawPrint, Plus, X } from 'lucide-react'
+import { Check, Inbox, LoaderCircle, Mail, MapPin, PawPrint, Pencil, Plus, Trash2, X } from 'lucide-react'
 import api from '../api'
 import PageHeader from '../components/PageHeader'
 import PetImage from '../components/PetImage'
@@ -18,6 +18,8 @@ export default function MyPets() {
   const [deciding, setDeciding] = useState(null)
   const [busy, setBusy] = useState(false)
   const [decisionError, setDecisionError] = useState('')
+  // Anúncio que está sendo removido.
+  const [removing, setRemoving] = useState(null)
 
   useEffect(() => {
     let active = true
@@ -57,6 +59,21 @@ export default function MyPets() {
     }
   }
 
+  async function confirmRemove() {
+    setBusy(true)
+    setDecisionError('')
+    try {
+      await api.delete(`/pets/${removing.id}`)
+      setState((current) => ({ ...current, items: current.items.filter((item) => item.pet.id !== removing.id) }))
+      toast(`Anúncio de ${removing.name} removido.`)
+      setRemoving(null)
+    } catch (error) {
+      setDecisionError(apiError(error, 'Não foi possível remover o anúncio.'))
+    } finally {
+      setBusy(false)
+    }
+  }
+
   const { loading, items, error } = state
 
   return (
@@ -78,6 +95,16 @@ export default function MyPets() {
               </span>
               <span className={`status status-${pet.status}`}>{statusLabels[pet.status] ?? pet.status}</span>
             </Link>
+            <div className="pet-actions">
+              <Link to={`/meus-anuncios/${pet.id}/editar`} className="button button-ghost button-small"><Pencil size={15} aria-hidden="true" /> Editar</Link>
+              {pet.status === 'available' ? (
+                <button type="button" className="button button-ghost button-small button-danger" onClick={() => { setDecisionError(''); setRemoving(pet) }}>
+                  <Trash2 size={15} aria-hidden="true" /> Remover
+                </button>
+              ) : (
+                <span className="hint">{pet.status === 'adopted' ? 'Pets adotados ficam como histórico.' : 'Responda o pedido para poder remover.'}</span>
+              )}
+            </div>
             {adoptions.length ? (
               <ul className="requests">
                 {adoptions.map((adoption) => (
@@ -105,6 +132,22 @@ export default function MyPets() {
           </article>
         ))}
       </div>
+
+      {removing && (
+        <Sheet title={`Remover o anúncio de ${removing.name}?`} onClose={() => !busy && setRemoving(null)}>
+          <div className="form">
+            <p className="sheet-text">{removing.name} sai da busca e dos favoritos de quem salvou. Pedidos recusados deste pet também deixam de aparecer.</p>
+            <p className="hint">Essa ação não pode ser desfeita.</p>
+            {decisionError && <p className="inline-error" role="alert">{decisionError}</p>}
+            <div className="form-actions">
+              <button type="button" className="button button-ghost" onClick={() => setRemoving(null)} disabled={busy}>Cancelar</button>
+              <button type="button" className="button button-primary button-danger-solid" onClick={confirmRemove} disabled={busy}>
+                {busy ? <LoaderCircle className="spin" size={18} /> : <Trash2 size={18} aria-hidden="true" />} Remover anúncio
+              </button>
+            </div>
+          </div>
+        </Sheet>
+      )}
 
       {deciding && (
         <Sheet

@@ -18,7 +18,7 @@ O documento de requisitos lista os casos abaixo. UC01–UC03 são o recorte esco
 | ID original | Caso de uso | Situação no projeto |
 | --- | --- | --- |
 | UC-A1 | Cadastrar pet para adoção | Incluído em UC01 — concluído. |
-| UC-A2 | Editar/remover anúncio de pet | Fora do escopo desta sprint. |
+| UC-A2 | Editar/remover anúncio de pet | Concluído (PR feat/editar-anuncio). |
 | UC-A3 | Buscar/filtrar pets | Incluído em UC02 — concluído. |
 | UC-A4 | Visualizar perfil detalhado do pet | Concluído (PR feat/layout-figma): tela de detalhes em `/pets/:id`. |
 | UC-A5 | Solicitar adoção | Incluído em UC03 — concluído; o responsável consulta os interesses em Meus anúncios. |
@@ -44,6 +44,7 @@ O documento de requisitos lista os casos abaixo. UC01–UC03 são o recorte esco
 | — | — | Favoritos, Minhas solicitações e edição de perfil (UC-A9, UC-T3). |
 | — | — | Aprovar ou recusar pedidos e acompanhar o status (UC-A6, UC-A7). |
 | — | — | Deploy na nuvem: site e API no Render, banco Postgres no Neon (DEPLOY.md). |
+| — | — | Editar e remover anúncio (UC-A2). |
 
 ## Critérios para concluir a sprint
 

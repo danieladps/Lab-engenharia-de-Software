@@ -4,6 +4,7 @@ import AppShell from './components/AppShell'
 import RequireAuth from './components/RequireAuth'
 import SessionWatcher from './components/SessionWatcher'
 import ComingSoon from './pages/ComingSoon'
+import EditPet from './pages/EditPet'
 import Favorites from './pages/Favorites'
 import Home from './pages/Home'
 import Login from './pages/Login'
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="perfil" element={<Profile />} />
           <Route path="anunciar" element={<RequireAuth><NewPet /></RequireAuth>} />
           <Route path="meus-anuncios" element={<RequireAuth><MyPets /></RequireAuth>} />
+          <Route path="meus-anuncios/:id/editar" element={<RequireAuth><EditPet /></RequireAuth>} />
           <Route path="minhas-solicitacoes" element={<RequireAuth><MyRequests /></RequireAuth>} />
           <Route path="*" element={<NotFound />} />
         </Route>
