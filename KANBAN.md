@@ -45,6 +45,7 @@ O documento de requisitos lista os casos abaixo. UC01–UC03 são o recorte esco
 | — | — | Aprovar ou recusar pedidos e acompanhar o status (UC-A6, UC-A7). |
 | — | — | Deploy na nuvem: site e API no Render, banco Postgres no Neon (DEPLOY.md). |
 | — | — | Editar e remover anúncio (UC-A2). |
+| — | — | Mensagens entre quem pediu e quem anunciou, com não lidas no menu. |
 
 ## Critérios para concluir a sprint
 

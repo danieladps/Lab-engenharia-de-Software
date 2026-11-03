@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ClipboardList, LoaderCircle, Mail, MapPin, PartyPopper } from 'lucide-react'
+import { ClipboardList, LoaderCircle, Mail, MapPin, MessageCircle, PartyPopper } from 'lucide-react'
 import api from '../api'
 import PageHeader from '../components/PageHeader'
 import PetImage from '../components/PetImage'
@@ -59,6 +59,7 @@ export default function MyRequests() {
             <div className="request-sent">
               <time dateTime={request.created_at}>Enviado em {formatDate(request.created_at)}{request.decided_at ? `, respondido em ${formatDate(request.decided_at)}` : ''}</time>
               <p>{request.message}</p>
+              <Link to={`/mensagens/${request.id}`} className="button button-ghost button-small request-chat"><MessageCircle size={16} aria-hidden="true" /> Conversar com {request.pet.donor_name}</Link>
             </div>
           </li>
         ))}

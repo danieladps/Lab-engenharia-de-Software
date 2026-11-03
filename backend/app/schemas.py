@@ -1,9 +1,18 @@
-from datetime import datetime
-from typing import Literal
+from datetime import datetime, timezone
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 
 EMAIL_PATTERN = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
+
+
+def _as_utc(value: datetime) -> datetime:
+    # O SQLite devolve datas sem fuso; elas foram gravadas em UTC.
+    # Sem o fuso, o navegador leria como horário local (3h de diferença no Brasil).
+    return value if value.tzinfo else value.replace(tzinfo=timezone.utc)
+
+
+UTCDateTime = Annotated[datetime, AfterValidator(_as_utc)]
 
 
 class UserCreate(BaseModel):
@@ -23,7 +32,7 @@ class UserRead(BaseModel):
     name: str
     email: str
     city: str
-    created_at: datetime
+    created_at: UTCDateTime
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -76,7 +85,7 @@ class PetRead(BaseModel):
     image_url: str
     status: str
     donor_name: str
-    created_at: datetime
+    created_at: UTCDateTime
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -91,8 +100,8 @@ class AdoptionRead(BaseModel):
     applicant_email: str
     message: str
     status: str
-    created_at: datetime
-    decided_at: datetime | None = None
+    created_at: UTCDateTime
+    decided_at: UTCDateTime | None = None
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -116,9 +125,60 @@ class MyAdoption(BaseModel):
     id: int
     message: str
     status: str
-    created_at: datetime
-    decided_at: datetime | None = None
+    created_at: UTCDateTime
+    decided_at: UTCDateTime | None = None
     pet: PetRead
     # Só vem preenchido quando o pedido foi aprovado, para combinarem a adoção.
     owner_contact: OwnerContact | None = None
     model_config = ConfigDict(from_attributes=True)
+
+
+class MessageCreate(BaseModel):
+    body: str = Field(min_length=1, max_length=2000)
+
+
+class MessageRead(BaseModel):
+    id: int
+    body: str
+    created_at: UTCDateTime
+    mine: bool
+    sender_name: str
+
+
+class ConversationPet(BaseModel):
+    id: int
+    name: str
+    image_url: str
+    status: str
+
+
+class LastMessage(BaseModel):
+    body: str
+    created_at: UTCDateTime
+    mine: bool
+
+
+class ConversationSummary(BaseModel):
+    """Uma conversa na lista de Mensagens."""
+
+    adoption_id: int
+    status: str
+    role: Literal["adopter", "owner"]
+    other_name: str
+    pet: ConversationPet
+    last_message: LastMessage | None
+    unread: int
+    updated_at: UTCDateTime
+
+
+class ConversationDetail(BaseModel):
+    adoption_id: int
+    status: str
+    role: Literal["adopter", "owner"]
+    other_name: str
+    pet: ConversationPet
+    # A mensagem do pedido, que abre a conversa.
+    request_message: str
+    request_sent_at: UTCDateTime
+    can_send: bool
+    messages: list[MessageRead]

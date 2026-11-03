@@ -25,3 +25,13 @@ export function apiError(error, fallback) {
   if (!error?.response) return 'Sem conexão com a API. Confira se ela está rodando.'
   return fallback
 }
+
+// Horário curto para listas e conversas: "14:05" se for hoje, senão "03/11".
+export function shortTime(value) {
+  const date = new Date(value)
+  const now = new Date()
+  const sameDay = date.toDateString() === now.toDateString()
+  return sameDay
+    ? date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+    : date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+}
