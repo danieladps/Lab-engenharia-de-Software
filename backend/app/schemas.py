@@ -50,6 +50,20 @@ class PetCreate(BaseModel):
     donor_name: str = Field(min_length=2, max_length=120)
 
 
+class PetUpdate(BaseModel):
+    """Campos que o dono pode corrigir; os que não forem enviados ficam como estão."""
+
+    name: str | None = Field(default=None, min_length=2, max_length=100)
+    species: Literal["Cão", "Gato", "Outro"] | None = None
+    breed: str | None = Field(default=None, min_length=2, max_length=100)
+    size: Literal["small", "medium", "large"] | None = None
+    age_years: int | None = Field(default=None, ge=0, le=30)
+    city: str | None = Field(default=None, min_length=2, max_length=100)
+    description: str | None = Field(default=None, min_length=10, max_length=2000)
+    image_url: str | None = Field(default=None, min_length=8, max_length=500)
+    donor_name: str | None = Field(default=None, min_length=2, max_length=120)
+
+
 class PetRead(BaseModel):
     id: int
     name: str
