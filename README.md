@@ -11,7 +11,7 @@ Aplicação web para aproximar pessoas interessadas em adotar de responsáveis p
 
 - **Front-end:** React, Vite, React Router, Axios e Lucide React. Layout mobile-first baseado nos protótipos do Figma.
 - **Back-end:** Python, FastAPI, SQLAlchemy, Pydantic e PyJWT (login com token).
-- **Banco de dados:** SQLite, com migrações versionadas pelo Alembic.
+- **Banco de dados:** SQLite no computador e Postgres na nuvem, com migrações versionadas pelo Alembic.
 
 ## Requisitos
 
@@ -102,3 +102,8 @@ npm run build
 Consulte [README-detalhado.md](README-detalhado.md) para estrutura do projeto, detalhes dos dados e documentação complementar.
 
 O quadro da sprint está em [KANBAN.md](KANBAN.md).
+
+
+## Deploy na nuvem
+
+O site e a API rodam no Render e o banco no Neon (Postgres), tudo no plano gratuito. O passo a passo está em [DEPLOY.md](DEPLOY.md). No computador, o projeto continua usando SQLite.

@@ -47,3 +47,32 @@ def test_migrations_keep_existing_data(tmp_path):
     assert db.execute("SELECT status FROM adoptions").fetchall() == [("pending",)]
     assert db.execute("SELECT COUNT(*) FROM favorites").fetchone()[0] == 1
     db.close()
+
+
+def test_migrations_on_postgres():
+    """Roda as migrações num Postgres de verdade (o banco usado no deploy).
+
+    Só roda se TEST_POSTGRES_URL estiver definida, apontando para um banco VAZIO
+    de teste, por exemplo: postgresql://usuario:senha@localhost:5432/petlume_teste
+    """
+    import os
+
+    import pytest
+
+    url = os.getenv("TEST_POSTGRES_URL")
+    if not url:
+        pytest.skip("TEST_POSTGRES_URL não definida")
+    url = url.replace("postgres://", "postgresql+psycopg://", 1).replace("postgresql://", "postgresql+psycopg://", 1)
+
+    config = Config("alembic.ini")
+    config.set_main_option("sqlalchemy.url", url)
+    command.upgrade(config, "head")
+    engine = create_engine(url)
+    with engine.connect() as connection:
+        diff = compare_metadata(MigrationContext.configure(connection), Base.metadata)
+    engine.dispose()
+    command.downgrade(config, "base")
+    command.upgrade(config, "head")
+    command.downgrade(config, "base")
+
+    assert diff == []

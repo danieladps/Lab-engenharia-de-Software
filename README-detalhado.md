@@ -13,7 +13,7 @@ Plataforma web enxuta para aproximar responsáveis por pets e pessoas interessad
 
 - **Front-end:** React, Vite, React Router, Axios e Lucide React.
 - **Back-end:** Python, FastAPI, Pydantic, SQLAlchemy, Uvicorn, PyJWT e pwdlib (Argon2).
-- **Banco:** SQLite, no arquivo `backend/petlume_mvp.db` por padrão, com migrações pelo Alembic.
+- **Banco:** SQLite no computador (arquivo `backend/petlume_mvp.db`) e Postgres na nuvem, com migrações pelo Alembic. O deploy está descrito em [DEPLOY.md](DEPLOY.md).
 - **Testes:** pytest, httpx e FastAPI TestClient com SQLite em memória.
 
 ```text
@@ -142,6 +142,15 @@ Se o login vencer com o site aberto, a próxima ação que precisa de login avis
 > Quem já tinha o arquivo `backend/petlume_mvp.db` da versão sem login precisa apagá-lo e rodar `alembic upgrade head` e `python -m app.seed_demo` de novo.
 
 ## Testes e validações
+
+Para conferir as migrações também num Postgres de verdade, crie um banco **vazio** de teste e rode:
+
+```bash
+TEST_POSTGRES_URL=postgresql://usuario:senha@localhost:5432/petlume_teste python -m pytest -q tests/test_migrations.py
+```
+
+Sem essa variável, o teste de Postgres é pulado.
+
 
 ```bash
 cd backend

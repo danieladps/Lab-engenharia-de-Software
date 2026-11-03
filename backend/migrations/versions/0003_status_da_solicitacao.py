@@ -26,7 +26,7 @@ ACTIVE = "status IN ('pending', 'approved')"
 
 
 def upgrade() -> None:
-    with op.batch_alter_table("adoptions", recreate="always") as batch_op:
+    with op.batch_alter_table("adoptions") as batch_op:
         batch_op.add_column(sa.Column("decided_at", sa.DateTime(timezone=True), nullable=True))
         batch_op.drop_constraint("ck_adoptions_status", type_="check")
         batch_op.create_check_constraint("ck_adoptions_status", "status IN ('pending', 'approved', 'rejected')")
@@ -37,7 +37,7 @@ def upgrade() -> None:
         sqlite_where=sa.text(ACTIVE), postgresql_where=sa.text(ACTIVE),
     )
 
-    with op.batch_alter_table("pets", recreate="always") as batch_op:
+    with op.batch_alter_table("pets") as batch_op:
         batch_op.drop_constraint("ck_pets_status", type_="check")
         batch_op.create_check_constraint("ck_pets_status", "status IN ('available', 'adoption_pending', 'adopted')")
 
@@ -49,12 +49,12 @@ def downgrade() -> None:
     op.execute("DELETE FROM adoptions WHERE status = 'rejected'")
     op.execute("UPDATE adoptions SET status = 'pending' WHERE status = 'approved'")
 
-    with op.batch_alter_table("pets", recreate="always") as batch_op:
+    with op.batch_alter_table("pets") as batch_op:
         batch_op.drop_constraint("ck_pets_status", type_="check")
         batch_op.create_check_constraint("ck_pets_status", "status IN ('available', 'adoption_pending')")
 
     op.drop_index("uq_adoptions_pet_active", table_name="adoptions")
-    with op.batch_alter_table("adoptions", recreate="always") as batch_op:
+    with op.batch_alter_table("adoptions") as batch_op:
         batch_op.drop_constraint("uq_adoptions_pet_user", type_="unique")
         batch_op.create_unique_constraint("uq_adoptions_pet", ["pet_id"])
         batch_op.drop_constraint("ck_adoptions_status", type_="check")
