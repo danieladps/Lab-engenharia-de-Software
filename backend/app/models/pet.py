@@ -11,7 +11,7 @@ class Pet(Base):
     __table_args__ = (
         CheckConstraint("size IN ('small', 'medium', 'large')", name="ck_pets_size"),
         CheckConstraint("age_years >= 0", name="ck_pets_age"),
-        CheckConstraint("status IN ('available', 'adoption_pending')", name="ck_pets_status"),
+        CheckConstraint("status IN ('available', 'adoption_pending', 'adopted')", name="ck_pets_status"),
     )
 
     id: Mapped[int] = mapped_column(primary_key=True)

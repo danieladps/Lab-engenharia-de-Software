@@ -78,7 +78,17 @@ class AdoptionRead(BaseModel):
     message: str
     status: str
     created_at: datetime
+    decided_at: datetime | None = None
     model_config = ConfigDict(from_attributes=True)
+
+
+class AdoptionDecision(BaseModel):
+    status: Literal["approved", "rejected"]
+
+
+class OwnerContact(BaseModel):
+    name: str
+    email: str
 
 
 class PetManagement(BaseModel):
@@ -93,5 +103,8 @@ class MyAdoption(BaseModel):
     message: str
     status: str
     created_at: datetime
+    decided_at: datetime | None = None
     pet: PetRead
+    # Só vem preenchido quando o pedido foi aprovado, para combinarem a adoção.
+    owner_contact: OwnerContact | None = None
     model_config = ConfigDict(from_attributes=True)

@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ClipboardList, LoaderCircle, MapPin } from 'lucide-react'
+import { ClipboardList, LoaderCircle, Mail, MapPin, PartyPopper } from 'lucide-react'
 import api from '../api'
 import PageHeader from '../components/PageHeader'
 import PetImage from '../components/PetImage'
 import EmptyState from '../components/EmptyState'
 import { adoptionStatusLabels, apiError } from '../lib/pets'
+
+const formatDate = (value) => new Date(value).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
 
 export default function MyRequests() {
   const [state, setState] = useState({ loading: true, items: [], error: '' })
@@ -41,8 +43,21 @@ export default function MyRequests() {
               </span>
               <span className={`status status-request-${request.status}`}>{adoptionStatusLabels[request.status] ?? request.status}</span>
             </Link>
+            {request.owner_contact && (
+              <div className="request-result request-approved">
+                <PartyPopper size={18} aria-hidden="true" />
+                <div>
+                  <strong>Pedido aprovado!</strong>
+                  <p>Combine a adoção de {request.pet.name} com {request.owner_contact.name}:</p>
+                  <a href={`mailto:${request.owner_contact.email}?subject=${encodeURIComponent(`Adoção de ${request.pet.name}`)}`}><Mail size={14} aria-hidden="true" /> {request.owner_contact.email}</a>
+                </div>
+              </div>
+            )}
+            {request.status === 'rejected' && (
+              <p className="request-result request-rejected">{request.pet.donor_name} recusou este pedido. Que tal conhecer outros pets?</p>
+            )}
             <div className="request-sent">
-              <time dateTime={request.created_at}>Enviado em {new Date(request.created_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</time>
+              <time dateTime={request.created_at}>Enviado em {formatDate(request.created_at)}{request.decided_at ? `, respondido em ${formatDate(request.decided_at)}` : ''}</time>
               <p>{request.message}</p>
             </div>
           </li>
