@@ -83,6 +83,9 @@ Todas as rotas usam o prefixo `/api`. As marcadas com 🔒 exigem o cabeçalho `
 | `DELETE` | `/pets/{pet_id}` 🔒 | O dono remove o anúncio (só se o pet estiver disponível) |
 | `POST` | `/pets/{pet_id}/adoptions` 🔒 | Registra interesse em um pet |
 | `PATCH` | `/adoptions/{adoption_id}` 🔒 | O dono do anúncio aprova (`approved`) ou recusa (`rejected`) um pedido |
+| `GET` | `/me/conversations` 🔒 | Conversas dos pedidos em que a conta participa, com a última mensagem e as não lidas |
+| `GET` | `/adoptions/{adoption_id}/messages` 🔒 | Abre a conversa de um pedido e marca as mensagens recebidas como lidas |
+| `POST` | `/adoptions/{adoption_id}/messages` 🔒 | Envia uma mensagem na conversa do pedido |
 | `GET` | `/health` | Verifica a conexão com o banco |
 
 ## Testes

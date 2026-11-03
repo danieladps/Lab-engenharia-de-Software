@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, Inbox, LoaderCircle, Mail, MapPin, PawPrint, Pencil, Plus, Trash2, X } from 'lucide-react'
+import { Check, Inbox, LoaderCircle, Mail, MapPin, MessageCircle, PawPrint, Pencil, Plus, Trash2, X } from 'lucide-react'
 import api from '../api'
 import PageHeader from '../components/PageHeader'
 import PetImage from '../components/PetImage'
@@ -117,12 +117,15 @@ export default function MyPets() {
                     </div>
                     <a href={`mailto:${adoption.applicant_email}?subject=${encodeURIComponent(`Adoção de ${pet.name}`)}`}><Mail size={14} aria-hidden="true" /> {adoption.applicant_email}</a>
                     <p>{adoption.message}</p>
-                    {adoption.status === 'pending' && (
-                      <div className="decision-actions">
-                        <button type="button" className="button button-ghost button-small" onClick={() => openDecision(pet, adoption, 'rejected')}><X size={16} aria-hidden="true" /> Recusar</button>
-                        <button type="button" className="button button-primary button-small" onClick={() => openDecision(pet, adoption, 'approved')}><Check size={16} aria-hidden="true" /> Aprovar</button>
-                      </div>
-                    )}
+                    <div className="decision-actions">
+                      <Link to={`/mensagens/${adoption.id}`} className="button button-ghost button-small"><MessageCircle size={16} aria-hidden="true" /> Conversar</Link>
+                      {adoption.status === 'pending' && (
+                        <>
+                          <button type="button" className="button button-ghost button-small" onClick={() => openDecision(pet, adoption, 'rejected')}><X size={16} aria-hidden="true" /> Recusar</button>
+                          <button type="button" className="button button-primary button-small" onClick={() => openDecision(pet, adoption, 'approved')}><Check size={16} aria-hidden="true" /> Aprovar</button>
+                        </>
+                      )}
+                    </div>
                   </li>
                 ))}
               </ul>

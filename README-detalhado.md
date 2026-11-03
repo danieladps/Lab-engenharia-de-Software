@@ -94,7 +94,8 @@ As tabelas são criadas e alteradas **somente** por migração: `alembic upgrade
 | `/perfil` | Dados da conta, editar nome e cidade, sair | Sim |
 | `/favoritos` | Pets salvos com o coração | Sim |
 | `/minhas-solicitacoes` | Pedidos de adoção que você enviou e o status de cada um | Sim |
-| `/mensagens` | Ainda sem função ("em breve") | — |
+| `/mensagens` | Lista de conversas, com as não lidas | Sim |
+| `/mensagens/:id` | Conversa de um pedido | Sim (só quem pediu e o dono do pet) |
 
 No celular, a navegação fica no menu inferior; a partir de 900 px de largura, vai para uma barra no topo. Se for publicar o front em um servidor, configure para que qualquer endereço sirva o `index.html` (as rotas são do React Router).
 
@@ -121,6 +122,9 @@ Todas as rotas usam o prefixo `/api`. As marcadas com 🔒 exigem `Authorization
 | `DELETE` | `/pets/{pet_id}` 🔒 | O dono remove o anúncio; só vale para pets disponíveis |
 | `POST` | `/pets/{pet_id}/adoptions` 🔒 | Registra a mensagem de interesse |
 | `PATCH` | `/adoptions/{adoption_id}` 🔒 | O dono do anúncio responde um pedido em aberto com `{"status": "approved"}` ou `{"status": "rejected"}` |
+| `GET` | `/me/conversations` 🔒 | Conversas da conta (como quem pediu ou como dono), da mais recente para a mais antiga, com `unread` |
+| `GET` | `/adoptions/{adoption_id}/messages` 🔒 | Mensagens do pedido; marca as recebidas como lidas |
+| `POST` | `/adoptions/{adoption_id}/messages` 🔒 | Envia `{"body": "..."}` (até 2000 caracteres) |
 
 Uma solicitação só pode ser registrada para um pet disponível. Após o envio, o anúncio muda para `adoption_pending` e sai da busca pública.
 
@@ -131,6 +135,12 @@ Uma solicitação só pode ser registrada para um pet disponível. Após o envio
    - **Aprovar** (`approved`): o pet fica **Adotado** e não volta para a busca. Quem pediu passa a ver o e-mail do dono em **Minhas solicitações**, para combinarem a adoção.
    - **Recusar** (`rejected`): o pet volta para a busca e pode receber pedido de outra pessoa.
 3. A resposta não pode ser desfeita, e só o dono do anúncio pode responder.
+
+### Mensagens
+
+Cada pedido de adoção tem uma conversa entre quem pediu e o dono do pet. A mensagem do pedido aparece no topo. Só essas duas pessoas leem e escrevem; para as outras contas, a conversa "não existe" (404). Se o pedido for recusado, a conversa fica só para leitura.
+
+As mensagens novas aparecem sozinhas: a tela da conversa confere a cada 5 segundos, e o número de não lidas no menu a cada 30 segundos (só com a aba aberta). Não é tempo real (WebSocket), que não funciona bem no plano gratuito do Render.
 
 ### Editar e remover anúncio
 
