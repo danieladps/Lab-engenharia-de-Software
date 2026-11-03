@@ -43,6 +43,7 @@ O documento de requisitos lista os casos abaixo. UC01–UC03 são o recorte esco
 | — | — | Novo layout mobile-first dos protótipos do Figma, com tela de detalhes do pet (UC-A4). |
 | — | — | Favoritos, Minhas solicitações e edição de perfil (UC-A9, UC-T3). |
 | — | — | Aprovar ou recusar pedidos e acompanhar o status (UC-A6, UC-A7). |
+| — | — | Deploy na nuvem: site e API no Render, banco Postgres no Neon (DEPLOY.md). |
 
 ## Critérios para concluir a sprint
 

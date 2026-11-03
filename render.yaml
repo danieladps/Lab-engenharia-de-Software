@@ -1,0 +1,42 @@
+# Deploy no Render (https://render.com) pelo "Blueprint": cria a API e o site de uma vez.
+# Passo a passo completo em DEPLOY.md. O banco Postgres fica fora do Render (ex.: Neon).
+services:
+  # API (FastAPI). As migrações e os dados de demonstração rodam a cada início;
+  # os dois são seguros de repetir (não duplicam nem apagam nada).
+  - type: web
+    name: petlume-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: alembic upgrade head && python -m app.seed_demo && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10
+      - key: DATABASE_URL
+        sync: false # cole a URL do Postgres (Neon) no painel do Render
+      - key: JWT_SECRET
+        generateValue: true # o Render gera uma chave aleatória
+      - key: CORS_ORIGINS
+        sync: false # endereço do site, ex.: https://petlume-web.onrender.com
+      - key: SEED_DEMO_DATA
+        value: "true"
+      - key: DEMO_USER_PASSWORD
+        sync: false # senha das contas de demonstração
+
+  # Site (React + Vite), servido como arquivos estáticos.
+  - type: web
+    name: petlume-web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    routes:
+      # Qualquer endereço (/pets/2, /perfil...) abre o app; quem decide a tela é o React Router.
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        sync: false # endereço da API, ex.: https://petlume-api.onrender.com

@@ -3,7 +3,15 @@ import axios from 'axios'
 export const TOKEN_KEY = 'petlume.token'
 export const SESSION_EXPIRED_EVENT = 'petlume:sessao-expirada'
 
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api' })
+// Em produção, VITE_API_URL é o endereço da API (com ou sem /api no final).
+// Sem ela (npm run dev), as chamadas vão para /api e o Vite repassa para localhost:8000.
+function apiBaseUrl(value) {
+  if (!value) return '/api'
+  const base = value.trim().replace(/\/+$/, '')
+  return base.endsWith('/api') ? base : `${base}/api`
+}
+
+const api = axios.create({ baseURL: apiBaseUrl(import.meta.env.VITE_API_URL) })
 
 // Envia o token de login em toda chamada, quando existir.
 api.interceptors.request.use((config) => {
