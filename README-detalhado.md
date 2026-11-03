@@ -90,8 +90,10 @@ As tabelas são criadas e alteradas **somente** por migração: `alembic upgrade
 | `/entrar` e `/cadastro` | Entrar e criar conta | Não |
 | `/anunciar` | Formulário de anúncio | Sim |
 | `/meus-anuncios` | Anúncios da conta e pedidos recebidos | Sim |
-| `/perfil` | Dados da conta e sair | Sim |
-| `/favoritos` e `/mensagens` | Ainda sem função ("em breve") | — |
+| `/perfil` | Dados da conta, editar nome e cidade, sair | Sim |
+| `/favoritos` | Pets salvos com o coração | Sim |
+| `/minhas-solicitacoes` | Pedidos de adoção que você enviou e o status de cada um | Sim |
+| `/mensagens` | Ainda sem função ("em breve") | — |
 
 No celular, a navegação fica no menu inferior; a partir de 900 px de largura, vai para uma barra no topo. Se for publicar o front em um servidor, configure para que qualquer endereço sirva o `index.html` (as rotas são do React Router).
 
@@ -106,6 +108,11 @@ Todas as rotas usam o prefixo `/api`. As marcadas com 🔒 exigem `Authorization
 | `POST` | `/auth/login` | Entra com `email` e `password` e devolve o token |
 | `GET` | `/auth/me` 🔒 | Dados da conta logada |
 | `GET` | `/me/pets` 🔒 | Anúncios da conta logada, cada um com os interesses recebidos |
+| `GET` | `/me/adoptions` 🔒 | Pedidos que a conta logada enviou, cada um com o pet |
+| `GET` | `/me/favorites` 🔒 | Pets salvos pela conta logada, do mais recente para o mais antigo |
+| `PUT` | `/me/favorites/{pet_id}` 🔒 | Salva o pet nos favoritos (repetir não duplica) |
+| `DELETE` | `/me/favorites/{pet_id}` 🔒 | Remove o pet dos favoritos |
+| `PATCH` | `/auth/me` 🔒 | Edita `name` e `city` (o e-mail não muda) |
 | `GET` | `/pets` | Lista pets disponíveis; aceita `species`, `size` e `city` |
 | `GET` | `/pets/{pet_id}` | Consulta os detalhes de um anúncio |
 | `POST` | `/pets` 🔒 | Publica um anúncio com `donor_name` e dados do pet |
@@ -117,7 +124,9 @@ Uma solicitação só pode ser registrada para um pet disponível. Após o envio
 
 O login devolve um token (JWT) que vale por `JWT_EXPIRE_MINUTES` (padrão: 1 dia). O front guarda o token no navegador e o envia em cada chamada; ao sair da conta, ele é apagado. Errar a senha e usar um e-mail sem conta dão a mesma mensagem, para não revelar quem está cadastrado.
 
-O e-mail de quem pediu um pet aparece **somente** para o dono daquele anúncio, em `/me/pets`. A busca pública e os detalhes do pet não mostram e-mail nem o id do dono.
+O e-mail de quem pediu um pet aparece **somente** para o dono daquele anúncio, em `/me/pets`. A busca pública e os detalhes do pet não mostram e-mail nem o id do dono. Favoritos e solicitações também são de cada conta: ninguém vê os de outra pessoa.
+
+Se o login vencer com o site aberto, a próxima ação que precisa de login avisa "Seu login expirou" e a pessoa volta a aparecer como deslogada.
 
 > Quem já tinha o arquivo `backend/petlume_mvp.db` da versão sem login precisa apagá-lo e rodar `alembic upgrade head` e `python -m app.seed_demo` de novo.
 

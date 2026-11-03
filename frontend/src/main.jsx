@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './lib/auth.jsx'
+import { FavoritesProvider } from './lib/favorites.jsx'
 import { ToastProvider } from './lib/toast.jsx'
 
 createRoot(document.getElementById('root')).render(
@@ -11,7 +12,9 @@ createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <AuthProvider>
         <ToastProvider>
-          <App />
+          <FavoritesProvider>
+            <App />
+          </FavoritesProvider>
         </ToastProvider>
       </AuthProvider>
     </BrowserRouter>

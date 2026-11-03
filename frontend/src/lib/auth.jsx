@@ -1,11 +1,25 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import api, { hasToken, saveToken } from '../api'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import api, { SESSION_EXPIRED_EVENT, hasToken, saveToken } from '../api'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   // undefined = conferindo o login salvo; null = sem login.
   const [user, setUser] = useState(() => (hasToken() ? undefined : null))
+  // Conta quantas vezes o login venceu, para o app mostrar um aviso.
+  const [expiredCount, setExpiredCount] = useState(0)
+  const userRef = useRef(user)
+  useEffect(() => { userRef.current = user }, [user])
+
+  useEffect(() => {
+    function onExpired() {
+      // Só avisa se a pessoa estava logada (não ao conferir um token velho na abertura).
+      if (userRef.current) setExpiredCount((count) => count + 1)
+      setUser(null)
+    }
+    window.addEventListener(SESSION_EXPIRED_EVENT, onExpired)
+    return () => window.removeEventListener(SESSION_EXPIRED_EVENT, onExpired)
+  }, [])
 
   useEffect(() => {
     if (user !== undefined) return undefined
@@ -29,7 +43,10 @@ export function AuthProvider({ children }) {
     setUser(null)
   }, [])
 
-  const value = useMemo(() => ({ user, checking: user === undefined, signIn, signOut }), [user, signIn, signOut])
+  const value = useMemo(
+    () => ({ user, checking: user === undefined, expiredCount, signIn, signOut, updateUser: setUser }),
+    [user, expiredCount, signIn, signOut],
+  )
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
