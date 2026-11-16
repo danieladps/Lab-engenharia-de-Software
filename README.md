@@ -4,13 +4,14 @@ Aplicação web para aproximar pessoas interessadas em adotar de responsáveis p
 
 0. **Criar conta e entrar:** nome, e-mail, senha e cidade.
 1. **Publicar um pet:** com login, informar os dados do animal e o nome exibido no anúncio.
-2. **Buscar pets:** consultar anúncios disponíveis e filtrar por espécie, porte e cidade.
+2. **Buscar pets:** consultar anúncios disponíveis e filtrar por espécie, porte e cidade, ou ver os pets mais perto da sua localização.
 3. **Demonstrar interesse:** com login, enviar uma mensagem ao responsável (nome e e-mail vêm da conta). Depois do primeiro envio, o anúncio sai da busca. O responsável vê os interesses em **Meus anúncios** e aprova ou recusa cada um; quem pediu acompanha em **Minhas solicitações**.
 
 ## Tecnologias
 
 - **Front-end:** React, Vite, React Router, Axios e Lucide React. Layout mobile-first baseado nos protótipos do Figma.
 - **Back-end:** Python, FastAPI, SQLAlchemy, Pydantic e PyJWT (login com token).
+- **APIs externas:** Geolocalização do navegador (posição de quem procura) e Nominatim, do OpenStreetMap (coordenadas da cidade de cada anúncio e nome da cidade de quem procura).
 - **Banco de dados:** SQLite no computador e Postgres na nuvem, com migrações versionadas pelo Alembic.
 
 ## Requisitos
@@ -94,7 +95,7 @@ Todas as rotas usam o prefixo `/api`. As marcadas com 🔒 exigem o cabeçalho `
 | `GET` | `/me/favorites` 🔒 | Pets salvos pela conta logada |
 | `PUT` / `DELETE` | `/me/favorites/{pet_id}` 🔒 | Salva ou remove um pet dos favoritos |
 | `PATCH` | `/auth/me` 🔒 | Edita nome e cidade da conta |
-| `GET` | `/pets` | Lista pets disponíveis; filtros `species`, `size` e `city` |
+| `GET` | `/pets` | Lista pets disponíveis; filtros `species`, `size` e `city`. Com `lat` e `lng` (localização de quem procura, não é guardada), ordena do mais perto para o mais longe e devolve `distance_km`; `max_km` limita a distância |
 | `GET` | `/pets/{pet_id}` | Exibe os dados de um anúncio |
 | `POST` | `/pets` 🔒 | Publica anúncio de pet |
 | `PATCH` | `/pets/{pet_id}` 🔒 | O dono edita o anúncio |

@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { LoaderCircle, MapPin, PawPrint, Plus, Search, SlidersHorizontal, X } from 'lucide-react'
+import { LoaderCircle, LocateFixed, MapPin, PawPrint, Plus, Search, SlidersHorizontal, X } from 'lucide-react'
 import api from '../api'
 import PetCard from '../components/PetCard'
 import PetImage from '../components/PetImage'
 import EmptyState from '../components/EmptyState'
 import { useAuth } from '../lib/auth'
 import { ageLabel, apiError, firstName, speciesChips } from '../lib/pets'
+import { cityName, getUserLocation } from '../lib/location'
 
 export default function Home() {
   const { user } = useAuth()
@@ -16,10 +17,15 @@ export default function Home() {
   const [cityDraft, setCityDraft] = useState('')
   const [text, setText] = useState('')
   const [showFilters, setShowFilters] = useState(false)
+  // Busca por perto: posição de quem procura (arredondada) e o nome da cidade, se achar.
+  const [near, setNear] = useState(null)
+  const [locating, setLocating] = useState(false)
+  const [locationError, setLocationError] = useState('')
+  const [maxKm, setMaxKm] = useState('')
   const [result, setResult] = useState({ key: null, items: [], error: '' })
 
   // A busca por espécie, porte e cidade vai para a API; nome e raça filtram na tela.
-  const key = JSON.stringify({ species, size, city })
+  const key = JSON.stringify({ species, size, city, lat: near?.lat, lng: near?.lng, max_km: near ? maxKm : '' })
   const current = result.key === key ? result : null
   const loading = current === null
 
@@ -38,8 +44,28 @@ export default function Home() {
     return term ? items.filter((pet) => `${pet.name} ${pet.breed}`.toLowerCase().includes(term)) : items
   }, [current, text])
 
-  const featured = !text && species === 'Todos' && size === 'Todos' && !city ? pets[0] : null
-  const activeFilters = (size !== 'Todos') + Boolean(city)
+  const featured = !text && species === 'Todos' && size === 'Todos' && !city && !near ? pets[0] : null
+  const activeFilters = (size !== 'Todos') + Boolean(city) + Boolean(near && maxKm)
+
+  async function toggleNear() {
+    setLocationError('')
+    if (near) {
+      setNear(null)
+      setMaxKm('')
+      return
+    }
+    setLocating(true)
+    try {
+      const position = await getUserLocation()
+      setNear({ ...position, label: null })
+      const label = await cityName(position)
+      if (label) setNear((current) => (current && current.lat === position.lat && current.lng === position.lng ? { ...current, label } : current))
+    } catch (error) {
+      setLocationError(error.message)
+    } finally {
+      setLocating(false)
+    }
+  }
 
   function applyCity(event) {
     event.preventDefault()
@@ -51,13 +77,14 @@ export default function Home() {
     setSize('Todos')
     setCity('')
     setCityDraft('')
+    setMaxKm('')
   }
 
   return (
     <main className="page home">
       <header className="home-head">
         <div>
-          <p className="home-location"><MapPin size={14} aria-hidden="true" /> {city || user?.city || 'Todo o Brasil'}</p>
+          <p className="home-location"><MapPin size={14} aria-hidden="true" /> {near ? `Perto de ${near.label || 'você'}` : city || user?.city || 'Todo o Brasil'}</p>
           <h1 className="home-title">
             {user ? `Olá, ${firstName(user.name)}! ` : ''}Encontre seu <em>companheiro perfeito</em>
           </h1>
@@ -79,7 +106,7 @@ export default function Home() {
       </div>
 
       {showFilters && (
-        <form id="filters" className="filter-panel" onSubmit={applyCity}>
+        <form id="filters" className={near ? 'filter-panel with-distance' : 'filter-panel'} onSubmit={applyCity}>
           <label>Porte
             <select value={size} onChange={(event) => setSize(event.target.value)}>
               <option value="Todos">Todos</option>
@@ -91,6 +118,17 @@ export default function Home() {
           <label>Cidade
             <input value={cityDraft} onChange={(event) => setCityDraft(event.target.value)} placeholder="Ex.: São Paulo" />
           </label>
+          {near && (
+            <label>Distância máxima
+              <select value={maxKm} onChange={(event) => setMaxKm(event.target.value)}>
+                <option value="">Qualquer</option>
+                <option value="10">Até 10 km</option>
+                <option value="25">Até 25 km</option>
+                <option value="50">Até 50 km</option>
+                <option value="100">Até 100 km</option>
+              </select>
+            </label>
+          )}
           <div className="filter-actions">
             <button type="button" className="button button-ghost button-small" onClick={clearFilters}><X size={15} aria-hidden="true" /> Limpar</button>
             <button className="button button-primary button-small">Aplicar</button>
@@ -115,6 +153,11 @@ export default function Home() {
           <h2 id="available-title">Disponíveis para adoção</h2>
           {!loading && <span>{pets.length} {pets.length === 1 ? 'pet' : 'pets'}</span>}
         </div>
+        <button type="button" className={near ? 'near-button active' : 'near-button'} onClick={toggleNear} aria-pressed={Boolean(near)} disabled={locating}>
+          {locating ? <LoaderCircle className="spin" size={16} aria-hidden="true" /> : <LocateFixed size={16} aria-hidden="true" />}
+          {locating ? 'Descobrindo sua localização...' : near ? 'Mostrando os mais perto de você · desligar' : 'Ver pets perto de mim'}
+        </button>
+        {locationError && <p className="inline-error" role="alert">{locationError}</p>}
         <div className="chips" role="group" aria-label="Filtrar por espécie">
           {speciesChips.map((chip) => (
             <button key={chip.value} type="button" className={species === chip.value ? 'chip selected' : 'chip'} aria-pressed={species === chip.value} onClick={() => setSpecies(chip.value)}>

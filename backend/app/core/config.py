@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     jwt_secret: str = Field(min_length=32)
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 60 * 24
+    # Busca as coordenadas das cidades no Nominatim (OpenStreetMap). Desligado nos testes.
+    geocoding_enabled: bool = True
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

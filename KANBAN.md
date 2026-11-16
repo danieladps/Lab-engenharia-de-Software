@@ -26,7 +26,8 @@
 
 | A fazer | Em andamento | Concluído |
 | --- | --- | --- |
-| Validar os casos de uso no site publicado (issue #8). | Ler a chave e a senha do banco do `docker-compose.yml` a partir de um `.env` (branch chore/docker-env). | Upload de foto do pet: o site reduz a imagem e a guarda no banco (PR #31). |
+| Publicar o site na nuvem: criar o banco no Neon e os serviços no Render (DEPLOY.md). | Pets perto de mim: localização de quem procura e distância até a cidade de cada anúncio (branch feat/pets-perto-de-mim). | Senha do banco e chave JWT do Docker no `.env` (PR #33). |
+| Validar os casos de uso no site publicado (issue #8). | — | Upload de foto do pet: o site reduz a imagem e a guarda no banco (PR #31). |
 | Preparar os anúncios de exemplo e ensaiar a demonstração (issue #9). | — | Avaliar a adoção: nota de 1 a 5 e comentário depois de aprovado (PR #29). |
 | Registrar evidências da demonstração (issue #10). | — | Notificações dentro do app: pedido novo, pedido aprovado ou recusado (PR #27). |
 | — | — | Integração contínua no GitHub Actions (PR #25). |
