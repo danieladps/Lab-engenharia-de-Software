@@ -14,24 +14,25 @@
 | UC-A5 | Solicitar adoção | Concluído (UC03); o responsável vê os pedidos em Meus anúncios (PR #16). |
 | UC-A6 | Aprovar/recusar solicitação de adoção | Concluído (PR #20, feat/status-solicitacao). |
 | UC-A7 | Acompanhar status da adoção | Concluído (PR #20): Minhas solicitações mostra aguardando, aprovado ou recusado. |
-| UC-A8 | Avaliar processo de adoção | **A fazer nesta sprint.** |
+| UC-A8 | Avaliar processo de adoção | Em andamento (branch feat/avaliar-adocao): quem adotou dá nota de 1 a 5 e comentário; quem anunciou vê em Meus anúncios. |
 | UC-A9 | Favoritar pet | Concluído (PR #19, feat/favoritos-perfil). |
 | UC-T1 | Cadastrar-se | Concluído (PR #17, feat/auth). |
 | UC-T2 | Login/logout | Concluído (PR #17, feat/auth). |
 | UC-T3 | Editar perfil | Concluído (PR #19): nome e cidade. |
-| UC-T4 | Receber notificações | Em andamento (branch feat/notificacoes): tela Avisos com pedido novo e resposta ao pedido, e número no menu. |
+| UC-T4 | Receber notificações | Concluído (PR #27): tela Avisos com pedido novo e resposta ao pedido, e número no menu. |
 | UC-T5 | Gerenciar usuários e permissões | Fora do escopo; MVP sem painel administrativo. |
 
 ## Tarefas da sprint
 
 | A fazer | Em andamento | Concluído |
 | --- | --- | --- |
-| Avaliar a adoção: nota de 1 a 5 e comentário depois de aprovado (UC-A8). | Notificações dentro do app: pedido novo, pedido aprovado ou recusado (UC-T4). | Integração contínua no GitHub Actions (PR #25). |
-| Upload de foto do pet (hoje o anúncio aceita só o endereço de uma imagem). | — | Kanban da Sprint 4 e issues resolvidas fechadas (PR #25). |
-| Ler a chave e a senha do banco do `docker-compose.yml` a partir de um `.env`. | — | Docker: `docker-compose.yml` com API, site e Postgres. |
-| Validar os casos de uso no site publicado (issue #8). | — | Mensagens entre quem pediu e quem anunciou, com não lidas no menu (PR #23). |
-| Preparar os anúncios de exemplo e ensaiar a demonstração (issue #9). | — | Editar e remover anúncio (PR #22). |
-| Registrar evidências da demonstração (issue #10). | — | Deploy na nuvem: site e API no Render, banco Postgres no Neon (PR #21, DEPLOY.md). |
+| Upload de foto do pet (hoje o anúncio aceita só o endereço de uma imagem). | Avaliar a adoção: nota de 1 a 5 e comentário depois de aprovado (UC-A8). | Notificações dentro do app: pedido novo, pedido aprovado ou recusado (PR #27). |
+| Ler a chave e a senha do banco do `docker-compose.yml` a partir de um `.env`. | — | Integração contínua no GitHub Actions (PR #25). |
+| Validar os casos de uso no site publicado (issue #8). | — | Kanban da Sprint 4 e issues resolvidas fechadas (PR #25). |
+| Preparar os anúncios de exemplo e ensaiar a demonstração (issue #9). | — | Docker: `docker-compose.yml` com API, site e Postgres. |
+| Registrar evidências da demonstração (issue #10). | — | Mensagens entre quem pediu e quem anunciou, com não lidas no menu (PR #23). |
+| — | — | Editar e remover anúncio (PR #22). |
+| — | — | Deploy na nuvem: site e API no Render, banco Postgres no Neon (PR #21, DEPLOY.md). |
 | — | — | Aprovar ou recusar pedidos e acompanhar o status (PR #20). |
 | — | — | Favoritos, Minhas solicitações e edição de perfil (PR #19). |
 | — | — | Novo layout mobile-first dos protótipos do Figma (PR #18). |
