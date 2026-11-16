@@ -1,65 +1,57 @@
-# Kanban — Sprint 3
+# Kanban — Sprint 4
 
 **Projeto:** PetLume — MVP de adoção responsável  
-**Escopo da sprint:** três casos de uso do MVP, agora com conta e login. Sem administração ou integrações externas.
-
-## Casos de uso do MVP
-
-| ID | Caso de uso | Ator | Objetivo | Status |
-| --- | --- | --- | --- | --- |
-| UC01 | Publicar anúncio de pet | Responsável pelo pet | Cadastrar o pet e os dados de contato do responsável. | Concluído |
-| UC02 | Buscar e visualizar pets disponíveis | Pessoa interessada em adotar | Consultar anúncios, filtrar por espécie, porte e cidade e ver os dados do pet. | Concluído |
-| UC03 | Demonstrar interesse em um pet | Pessoa interessada em adotar | Com login, enviar uma mensagem ao responsável; o anúncio fica indisponível para novos pedidos. | Concluído: envio, bloqueio e consulta pelo responsável em Meus anúncios. |
+**Escopo da sprint:** fechar os casos de uso que faltam do documento original, automatizar a verificação no GitHub e preparar a apresentação com o site publicado na nuvem.
 
 ## Casos de uso do documento original
 
-O documento de requisitos lista os casos abaixo. UC01–UC03 são o recorte escolhido para esta sprint; os demais estão identificados como fora do escopo atual, não como trabalho já implementado.
-
 | ID original | Caso de uso | Situação no projeto |
 | --- | --- | --- |
-| UC-A1 | Cadastrar pet para adoção | Incluído em UC01 — concluído. |
-| UC-A2 | Editar/remover anúncio de pet | Concluído (PR feat/editar-anuncio). |
-| UC-A3 | Buscar/filtrar pets | Incluído em UC02 — concluído. |
-| UC-A4 | Visualizar perfil detalhado do pet | Concluído (PR feat/layout-figma): tela de detalhes em `/pets/:id`. |
-| UC-A5 | Solicitar adoção | Incluído em UC03 — concluído; o responsável consulta os interesses em Meus anúncios. |
-| UC-A6 | Aprovar/recusar solicitação de adoção | Concluído (PR feat/status-solicitacao). |
-| UC-A7 | Acompanhar status da adoção | Concluído (PR feat/status-solicitacao): Minhas solicitações mostra aguardando, aprovado ou recusado. |
-| UC-A8 | Avaliar processo de adoção | Fora do escopo desta sprint. |
-| UC-A9 | Favoritar pet | Concluído (PR feat/favoritos-perfil). |
-| UC-T1 | Cadastrar-se | Concluído (PR feat/auth). |
-| UC-T2 | Login/logout | Concluído (PR feat/auth). |
-| UC-T3 | Editar perfil | Concluído (PR feat/favoritos-perfil): nome e cidade. |
-| UC-T4 | Receber notificações | Fora do escopo desta sprint. |
+| UC-A1 | Cadastrar pet para adoção | Concluído (UC01). |
+| UC-A2 | Editar/remover anúncio de pet | Concluído (PR #22, feat/editar-anuncio). |
+| UC-A3 | Buscar/filtrar pets | Concluído (UC02): espécie, porte e cidade. |
+| UC-A4 | Visualizar perfil detalhado do pet | Concluído (PR #18, feat/layout-figma): tela `/pets/:id`. |
+| UC-A5 | Solicitar adoção | Concluído (UC03); o responsável vê os pedidos em Meus anúncios (PR #16). |
+| UC-A6 | Aprovar/recusar solicitação de adoção | Concluído (PR #20, feat/status-solicitacao). |
+| UC-A7 | Acompanhar status da adoção | Concluído (PR #20): Minhas solicitações mostra aguardando, aprovado ou recusado. |
+| UC-A8 | Avaliar processo de adoção | **A fazer nesta sprint.** |
+| UC-A9 | Favoritar pet | Concluído (PR #19, feat/favoritos-perfil). |
+| UC-T1 | Cadastrar-se | Concluído (PR #17, feat/auth). |
+| UC-T2 | Login/logout | Concluído (PR #17, feat/auth). |
+| UC-T3 | Editar perfil | Concluído (PR #19): nome e cidade. |
+| UC-T4 | Receber notificações | **A fazer nesta sprint.** Hoje só existe o contador de mensagens não lidas (PR #23). |
 | UC-T5 | Gerenciar usuários e permissões | Fora do escopo; MVP sem painel administrativo. |
 
 ## Tarefas da sprint
 
 | A fazer | Em andamento | Concluído |
 | --- | --- | --- |
-| Validar manualmente os três casos de uso pela interface e conferir a persistência após reiniciar a API. | — | Estrutura React/Vite e API FastAPI organizadas. |
-| Preparar os anúncios de exemplo e ensaiar a demonstração. | — | SQLite configurado, tabelas criadas automaticamente e carga de exemplos disponível. |
-| Registrar evidências da demonstração e atualizar o quadro ao concluir as tarefas. | — | Testes automatizados da API, lint e build do front-end aprovados. |
-| — | — | Cadastro, login e logout; consulta dos interesses em Meus anúncios (UC03, UC-T1, UC-T2). |
-| — | — | Novo layout mobile-first dos protótipos do Figma, com tela de detalhes do pet (UC-A4). |
-| — | — | Favoritos, Minhas solicitações e edição de perfil (UC-A9, UC-T3). |
-| — | — | Aprovar ou recusar pedidos e acompanhar o status (UC-A6, UC-A7). |
-| — | — | Deploy na nuvem: site e API no Render, banco Postgres no Neon (DEPLOY.md). |
-| — | — | Editar e remover anúncio (UC-A2). |
-| — | — | Mensagens entre quem pediu e quem anunciou, com não lidas no menu. |
+| Notificações dentro do app: pedido novo, pedido aprovado ou recusado (UC-T4). | Integração contínua no GitHub Actions: testes da API, lint e build do site em cada PR (issue #24). | Docker: `docker-compose.yml` com API, site e Postgres. |
+| Avaliar a adoção: nota de 1 a 5 e comentário depois de aprovado (UC-A8). | Atualizar este quadro para a Sprint 4 e fechar as issues já resolvidas (issue #24). | Mensagens entre quem pediu e quem anunciou, com não lidas no menu (PR #23). |
+| Upload de foto do pet (hoje o anúncio aceita só o endereço de uma imagem). | — | Editar e remover anúncio (PR #22). |
+| Ler a chave e a senha do banco do `docker-compose.yml` a partir de um `.env`. | — | Deploy na nuvem: site e API no Render, banco Postgres no Neon (PR #21, DEPLOY.md). |
+| Validar os casos de uso no site publicado (issue #8). | — | Aprovar ou recusar pedidos e acompanhar o status (PR #20). |
+| Preparar os anúncios de exemplo e ensaiar a demonstração (issue #9). | — | Favoritos, Minhas solicitações e edição de perfil (PR #19). |
+| Registrar evidências da demonstração (issue #10). | — | Novo layout mobile-first dos protótipos do Figma (PR #18). |
+| — | — | Cadastro, login e logout (PR #17). |
+| — | — | Consulta dos interesses em Meus anúncios (PR #16). |
 
 ## Critérios para concluir a sprint
 
-- UC01, UC02 e UC03 são demonstrados pela interface usando o SQLite.
-- O responsável pelo anúncio consegue consultar os dados enviados em UC03.
-- Após reiniciar a API, os anúncios e interesses continuam persistidos.
-- O roteiro e este quadro refletem o estado final apresentado.
+- Todos os casos de uso concluídos são demonstrados no site publicado (Render + Neon), não só no computador.
+- O GitHub Actions passa (testes, lint e build) em todos os PRs da sprint.
+- Cada tarefa tem uma issue, uma branch `feat/*`, `fix/*` ou `chore/*` e um PR ligado à issue.
+- Este quadro reflete o estado final apresentado.
 
 ## Roteiro da demonstração
 
-1. Criar uma conta (ou entrar com a conta do abrigo de demonstração) e publicar um anúncio.
-2. Encontrar o anúncio e testar filtros de espécie, porte e cidade.
-3. Entrar com outra conta (o visitante de demonstração) e enviar interesse com uma mensagem.
-4. Entrar como responsável, abrir Meus anúncios, mostrar os dados recebidos e confirmar que o pet não aparece mais entre os disponíveis.
+1. Uns 5 minutos antes, abrir `/api/health` do site publicado para acordar a API (plano gratuito do Render).
+2. Entrar com a conta do abrigo de demonstração e publicar um anúncio; editar um dado do anúncio.
+3. Encontrar o anúncio e testar os filtros de espécie, porte e cidade; favoritar um pet.
+4. Entrar com a conta do visitante e enviar interesse com uma mensagem.
+5. Voltar para o abrigo, abrir Meus anúncios, responder a mensagem e aprovar o pedido.
+6. Como visitante, mostrar o status aprovado em Minhas solicitações e a conversa em Mensagens.
+7. Mostrar no GitHub os PRs da sprint com o CI verde e este quadro.
 
 ## Fora do escopo desta sprint
 
