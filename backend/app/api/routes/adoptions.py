@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.api.deps import get_current_user
 from app.db.session import get_db
-from app.models import Adoption, Pet, User
+from app.models import Adoption, Notification, Pet, User
 from app.schemas import AdoptionCreate, AdoptionDecision, AdoptionRead
 
 router = APIRouter(tags=["Solicitações de adoção"])
@@ -37,6 +37,8 @@ def request_adoption(
     )
     pet.status = "adoption_pending"
     db.add(adoption)
+    # Avisa quem anunciou que chegou um pedido.
+    db.add(Notification(user_id=pet.owner_id, adoption=adoption, kind="adoption_requested"))
     try:
         db.commit()
     except IntegrityError:
@@ -67,6 +69,8 @@ def decide_adoption(
     adoption.decided_at = datetime.now(timezone.utc)
     # Aprovado: o pet foi adotado. Recusado: o pet volta para a busca.
     adoption.pet.status = "adopted" if payload.status == "approved" else "available"
+    # Avisa quem pediu sobre a resposta.
+    db.add(Notification(user_id=adoption.user_id, adoption=adoption, kind=f"adoption_{payload.status}"))
     db.commit()
     db.refresh(adoption)
     return adoption
