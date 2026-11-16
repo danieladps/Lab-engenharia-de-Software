@@ -26,10 +26,12 @@
 
 | A fazer | Em andamento | Concluído |
 | --- | --- | --- |
-| Publicar o site na nuvem: criar o banco no Neon e os serviços no Render (DEPLOY.md). | Pets perto de mim: localização de quem procura e distância até a cidade de cada anúncio (branch feat/pets-perto-de-mim). | Senha do banco e chave JWT do Docker no `.env` (PR #33). |
-| Validar os casos de uso no site publicado (issue #8). | — | Upload de foto do pet: o site reduz a imagem e a guarda no banco (PR #31). |
-| Preparar os anúncios de exemplo e ensaiar a demonstração (issue #9). | — | Avaliar a adoção: nota de 1 a 5 e comentário depois de aprovado (PR #29). |
-| Registrar evidências da demonstração (issue #10). | — | Notificações dentro do app: pedido novo, pedido aprovado ou recusado (PR #27). |
+| Preparar os anúncios de exemplo e ensaiar a demonstração (issue #9). | Validar os casos de uso no site publicado (issue #8). | Site publicado: https://petlume-web.onrender.com (Render + banco no Neon). |
+| Registrar evidências da demonstração (issue #10). | — | Pets perto de mim: localização de quem procura e distância até a cidade de cada anúncio (PR #35). |
+| — | — | Senha do banco e chave JWT do Docker no `.env` (PR #33). |
+| — | — | Upload de foto do pet: o site reduz a imagem e a guarda no banco (PR #31). |
+| — | — | Avaliar a adoção: nota de 1 a 5 e comentário depois de aprovado (PR #29). |
+| — | — | Notificações dentro do app: pedido novo, pedido aprovado ou recusado (PR #27). |
 | — | — | Integração contínua no GitHub Actions (PR #25). |
 | — | — | Kanban da Sprint 4 e issues resolvidas fechadas (PR #25). |
 | — | — | Docker: `docker-compose.yml` com API, site e Postgres. |
@@ -51,12 +53,12 @@
 
 ## Roteiro da demonstração
 
-1. Uns 5 minutos antes, abrir `/api/health` do site publicado para acordar a API (plano gratuito do Render).
+1. Uns 5 minutos antes, abrir https://petlume-api.onrender.com/api/health para acordar a API (plano gratuito do Render). O site fica em https://petlume-web.onrender.com.
 2. Entrar com a conta do abrigo de demonstração e publicar um anúncio; editar um dado do anúncio.
-3. Encontrar o anúncio e testar os filtros de espécie, porte e cidade; favoritar um pet.
+3. Encontrar o anúncio e testar os filtros de espécie, porte e cidade; tocar em **Ver pets perto de mim** e mostrar a distância; favoritar um pet.
 4. Entrar com a conta do visitante e enviar interesse com uma mensagem.
 5. Voltar para o abrigo, abrir Meus anúncios, responder a mensagem e aprovar o pedido.
-6. Como visitante, mostrar o status aprovado em Minhas solicitações e a conversa em Mensagens.
+6. Como visitante, mostrar o aviso de aprovação em Avisos, o status aprovado em Minhas solicitações, a conversa em Mensagens e dar a avaliação da adoção.
 7. Mostrar no GitHub os PRs da sprint com o CI verde e este quadro.
 
 ## Fora do escopo desta sprint
