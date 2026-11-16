@@ -5,6 +5,7 @@ import api from '../api'
 import PageHeader from '../components/PageHeader'
 import PetImage from '../components/PetImage'
 import EmptyState from '../components/EmptyState'
+import { Stars } from '../components/Stars'
 import Sheet from '../components/Sheet'
 import { useToast } from '../lib/toast'
 import { adoptionStatusLabels, apiError, firstName, sizeLabels, statusLabels } from '../lib/pets'
@@ -117,6 +118,12 @@ export default function MyPets() {
                     </div>
                     <a href={`mailto:${adoption.applicant_email}?subject=${encodeURIComponent(`Adoção de ${pet.name}`)}`}><Mail size={14} aria-hidden="true" /> {adoption.applicant_email}</a>
                     <p>{adoption.message}</p>
+                    {adoption.review && (
+                      <div className="review-done review-received">
+                        <span>Avaliação de {firstName(adoption.applicant_name)}: <Stars value={adoption.review.rating} /></span>
+                        {adoption.review.comment && <p>{adoption.review.comment}</p>}
+                      </div>
+                    )}
                     <div className="decision-actions">
                       <Link to={`/mensagens/${adoption.id}`} className="button button-ghost button-small"><MessageCircle size={16} aria-hidden="true" /> Conversar</Link>
                       {adoption.status === 'pending' && (
