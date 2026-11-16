@@ -62,6 +62,24 @@ npm run dev
 
 Abra http://localhost:5173. A documentação interativa da API está em http://localhost:8000/docs e o health check em http://localhost:8000/api/health.
 
+### Ou tudo com Docker
+
+Com o Docker instalado, dá para subir API, site e Postgres de uma vez. Na raiz do repositório:
+
+```bash
+cp .env.example .env
+```
+
+Abra o `.env` e preencha `POSTGRES_PASSWORD` (só letras e números) e `JWT_SECRET` (gere como no passo 1). Depois:
+
+```bash
+docker compose up --build
+```
+
+O site abre em http://localhost:5173 e a API em http://localhost:8000. O `.env` não vai para o GitHub.
+
+> Quem já tinha subido o Docker com a senha antiga do banco precisa apagar o volume antes: `docker compose down -v` (apaga só os dados locais do Docker).
+
 ## Rotas da API
 
 Todas as rotas usam o prefixo `/api`. As marcadas com 🔒 exigem o cabeçalho `Authorization: Bearer <token>` recebido no login.
