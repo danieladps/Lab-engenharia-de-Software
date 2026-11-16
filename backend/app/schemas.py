@@ -182,3 +182,20 @@ class ConversationDetail(BaseModel):
     request_sent_at: UTCDateTime
     can_send: bool
     messages: list[MessageRead]
+
+
+class NotificationRead(BaseModel):
+    """Um aviso na tela de Avisos. Só nomes, nunca e-mail."""
+
+    id: int
+    kind: Literal["adoption_requested", "adoption_approved", "adoption_rejected"]
+    adoption_id: int
+    pet: ConversationPet
+    # Quem pediu (para o dono do anúncio) ou o nome exibido no anúncio (para quem pediu).
+    other_name: str
+    created_at: datetime
+    read: bool
+
+
+class NotificationCount(BaseModel):
+    unread: int

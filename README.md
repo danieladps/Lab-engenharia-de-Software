@@ -86,6 +86,9 @@ Todas as rotas usam o prefixo `/api`. As marcadas com 🔒 exigem o cabeçalho `
 | `GET` | `/me/conversations` 🔒 | Conversas dos pedidos em que a conta participa, com a última mensagem e as não lidas |
 | `GET` | `/adoptions/{adoption_id}/messages` 🔒 | Abre a conversa de um pedido e marca as mensagens recebidas como lidas |
 | `POST` | `/adoptions/{adoption_id}/messages` 🔒 | Envia uma mensagem na conversa do pedido |
+| `GET` | `/me/notifications` 🔒 | Avisos da conta logada: pedido novo, pedido aprovado ou recusado |
+| `GET` | `/me/notifications/unread` 🔒 | Quantos avisos ainda não foram vistos |
+| `POST` | `/me/notifications/read` 🔒 | Marca todos os avisos como vistos |
 | `GET` | `/health` | Verifica a conexão com o banco |
 
 ## Testes

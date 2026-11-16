@@ -11,6 +11,7 @@ import Messages from './pages/Messages'
 import MyPets from './pages/MyPets'
 import MyRequests from './pages/MyRequests'
 import NewPet from './pages/NewPet'
+import Notifications from './pages/Notifications'
 import NotFound from './pages/NotFound'
 import PetDetail from './pages/PetDetail'
 import Profile from './pages/Profile'
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="favoritos" element={<Favorites />} />
           <Route path="mensagens" element={<Messages />} />
           <Route path="mensagens/:id" element={<RequireAuth><Conversation /></RequireAuth>} />
+          <Route path="avisos" element={<RequireAuth><Notifications /></RequireAuth>} />
           <Route path="perfil" element={<Profile />} />
           <Route path="anunciar" element={<RequireAuth><NewPet /></RequireAuth>} />
           <Route path="meus-anuncios" element={<RequireAuth><MyPets /></RequireAuth>} />
