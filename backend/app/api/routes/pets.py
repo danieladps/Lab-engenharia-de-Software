@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
+from app.core import geocoding
 from app.db.session import get_db
 from app.models import Pet, User
 from app.schemas import PetCreate, PetRead, PetUpdate
@@ -15,6 +16,9 @@ def list_pets(
     species: str | None = None,
     size: str | None = None,
     city: str | None = None,
+    lat: float | None = Query(default=None, ge=-90, le=90, description="Latitude de quem procura (não é guardada)"),
+    lng: float | None = Query(default=None, ge=-180, le=180, description="Longitude de quem procura (não é guardada)"),
+    max_km: float | None = Query(default=None, gt=0, le=5000, description="Distância máxima, com lat e lng"),
     db: Session = Depends(get_db),
 ):
     query = select(Pet).where(Pet.status == "available")
@@ -24,7 +28,38 @@ def list_pets(
         query = query.where(Pet.size == size)
     if city:
         query = query.where(Pet.city.ilike(f"%{city.strip()}%"))
-    return db.scalars(query.order_by(Pet.created_at.desc())).all()
+    pets = db.scalars(query.order_by(Pet.created_at.desc())).all()
+    if lat is None or lng is None:
+        return pets
+
+    _fill_missing_coordinates(pets, db)
+    items = []
+    for pet in pets:
+        distance = None
+        if pet.latitude is not None and pet.longitude is not None:
+            distance = round(geocoding.distance_km(lat, lng, pet.latitude, pet.longitude), 1)
+        if max_km is not None and (distance is None or distance > max_km):
+            continue
+        items.append(PetRead.model_validate(pet).model_copy(update={"distance_km": distance}))
+    # Mais perto primeiro; anúncios sem cidade encontrada vão para o fim.
+    items.sort(key=lambda item: (item.distance_km is None, item.distance_km or 0))
+    return items
+
+
+def _fill_missing_coordinates(pets, db: Session, limit: int = 10) -> None:
+    """Anúncios antigos (de antes da localização) ganham coordenadas na primeira busca por perto."""
+    missing = [pet for pet in pets if pet.latitude is None]
+    if not missing:
+        return
+    found: dict[str, tuple[float, float] | None] = {}
+    for pet in missing:
+        if pet.city not in found and len(found) >= limit:
+            continue
+        if pet.city not in found:
+            found[pet.city] = geocoding.geocode_city(pet.city)
+        if found[pet.city]:
+            pet.latitude, pet.longitude = found[pet.city]
+    db.commit()
 
 
 @router.post("", response_model=PetRead, status_code=status.HTTP_201_CREATED)
@@ -34,6 +69,9 @@ def create_pet(
     db: Session = Depends(get_db),
 ):
     pet = Pet(**payload.model_dump(), owner_id=user.id)
+    coordinates = geocoding.geocode_city(pet.city)
+    if coordinates:
+        pet.latitude, pet.longitude = coordinates
     db.add(pet)
     db.commit()
     db.refresh(pet)
@@ -65,8 +103,12 @@ def update_pet(
 ):
     """O dono corrige os dados do anúncio. O status (disponível, adotado...) não muda por aqui."""
     pet = _own_pet(pet_id, user, db)
+    old_city = pet.city
     for field, value in payload.model_dump(exclude_unset=True, exclude_none=True).items():
         setattr(pet, field, value.strip() if isinstance(value, str) else value)
+    if pet.city != old_city:
+        coordinates = geocoding.geocode_city(pet.city)
+        pet.latitude, pet.longitude = coordinates if coordinates else (None, None)
     db.commit()
     db.refresh(pet)
     return pet
