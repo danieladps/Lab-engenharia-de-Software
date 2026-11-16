@@ -14,7 +14,7 @@
 | UC-A5 | Solicitar adoção | Concluído (UC03); o responsável vê os pedidos em Meus anúncios (PR #16). |
 | UC-A6 | Aprovar/recusar solicitação de adoção | Concluído (PR #20, feat/status-solicitacao). |
 | UC-A7 | Acompanhar status da adoção | Concluído (PR #20): Minhas solicitações mostra aguardando, aprovado ou recusado. |
-| UC-A8 | Avaliar processo de adoção | Em andamento (branch feat/avaliar-adocao): quem adotou dá nota de 1 a 5 e comentário; quem anunciou vê em Meus anúncios. |
+| UC-A8 | Avaliar processo de adoção | Concluído (PR #29): quem adotou dá nota de 1 a 5 e comentário; quem anunciou vê em Meus anúncios. |
 | UC-A9 | Favoritar pet | Concluído (PR #19, feat/favoritos-perfil). |
 | UC-T1 | Cadastrar-se | Concluído (PR #17, feat/auth). |
 | UC-T2 | Login/logout | Concluído (PR #17, feat/auth). |
@@ -26,11 +26,12 @@
 
 | A fazer | Em andamento | Concluído |
 | --- | --- | --- |
-| Upload de foto do pet (hoje o anúncio aceita só o endereço de uma imagem). | Avaliar a adoção: nota de 1 a 5 e comentário depois de aprovado (UC-A8). | Notificações dentro do app: pedido novo, pedido aprovado ou recusado (PR #27). |
-| Ler a chave e a senha do banco do `docker-compose.yml` a partir de um `.env`. | — | Integração contínua no GitHub Actions (PR #25). |
-| Validar os casos de uso no site publicado (issue #8). | — | Kanban da Sprint 4 e issues resolvidas fechadas (PR #25). |
-| Preparar os anúncios de exemplo e ensaiar a demonstração (issue #9). | — | Docker: `docker-compose.yml` com API, site e Postgres. |
-| Registrar evidências da demonstração (issue #10). | — | Mensagens entre quem pediu e quem anunciou, com não lidas no menu (PR #23). |
+| Ler a chave e a senha do banco do `docker-compose.yml` a partir de um `.env`. | Upload de foto do pet: o site reduz a imagem e a guarda no banco (branch feat/foto-do-pet). | Avaliar a adoção: nota de 1 a 5 e comentário depois de aprovado (PR #29). |
+| Validar os casos de uso no site publicado (issue #8). | — | Notificações dentro do app: pedido novo, pedido aprovado ou recusado (PR #27). |
+| Preparar os anúncios de exemplo e ensaiar a demonstração (issue #9). | — | Integração contínua no GitHub Actions (PR #25). |
+| Registrar evidências da demonstração (issue #10). | — | Kanban da Sprint 4 e issues resolvidas fechadas (PR #25). |
+| — | — | Docker: `docker-compose.yml` com API, site e Postgres. |
+| — | — | Mensagens entre quem pediu e quem anunciou, com não lidas no menu (PR #23). |
 | — | — | Editar e remover anúncio (PR #22). |
 | — | — | Deploy na nuvem: site e API no Render, banco Postgres no Neon (PR #21, DEPLOY.md). |
 | — | — | Aprovar ou recusar pedidos e acompanhar o status (PR #20). |
