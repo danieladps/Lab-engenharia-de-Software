@@ -356,3 +356,16 @@ button.menu-row { width: 100%; font: inherit; text-align: left; cursor: pointer;
   .chat-head { top: 61px; }
   .chat-composer { bottom: 0; }
 }
+
+/* ---------- Avaliação da adoção ---------- */
+.stars { display: inline-flex; gap: 2px; vertical-align: -3px; }
+.star { color: #d9cfc7; }
+.star.on { color: var(--orange); fill: var(--orange); }
+.stars-input { gap: 4px; }
+.star-button { display: grid; place-items: center; min-width: 44px; min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer; }
+.star-button:disabled { cursor: default; }
+.review-form { display: grid; gap: 10px; padding: 12px 14px; border-top: 1px solid var(--line); }
+.review-form .button { justify-self: start; }
+.review-done { display: grid; gap: 4px; }
+.review-done p { margin: 0; color: #5a4a40; font-size: 14px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.review-received { padding: 10px 12px; border-radius: var(--radius-md); background: var(--orange-soft); font-size: 14px; }
