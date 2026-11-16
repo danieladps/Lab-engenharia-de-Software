@@ -213,3 +213,9 @@ class NotificationRead(BaseModel):
 
 class NotificationCount(BaseModel):
     unread: int
+
+
+class PhotoRead(BaseModel):
+    id: int
+    # Endereço relativo à API; vai no image_url do anúncio.
+    url: str

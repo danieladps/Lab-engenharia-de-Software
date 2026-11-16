@@ -90,6 +90,8 @@ Todas as rotas usam o prefixo `/api`. As marcadas com 🔒 exigem o cabeçalho `
 | `GET` | `/me/notifications` 🔒 | Avisos da conta logada: pedido novo, pedido aprovado ou recusado |
 | `GET` | `/me/notifications/unread` 🔒 | Quantos avisos ainda não foram vistos |
 | `POST` | `/me/notifications/read` 🔒 | Marca todos os avisos como vistos |
+| `POST` | `/photos` 🔒 | Envia a foto do pet (JPEG, PNG ou WebP, até 2 MB, no corpo da requisição) e devolve o endereço para usar no anúncio |
+| `GET` | `/photos/{photo_id}` | Mostra uma foto enviada |
 | `GET` | `/health` | Verifica a conexão com o banco |
 
 ## Testes
