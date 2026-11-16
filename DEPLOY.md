@@ -55,7 +55,14 @@ No plano gratuito, a API **dorme depois de uns 15 minutos sem uso** e leva cerca
 
 ## Atualizações
 
-Cada merge na `main` gera um novo deploy automático dos dois serviços. As migrações novas rodam sozinhas quando a API inicia.
+O Blueprint foi criado pelo **endereço público** do repositório, então um merge na `main` **não publica sozinho**. Depois de cada merge:
+
+1. No Render, abra o `petlume-api` e clique em **Manual Deploy → Deploy latest commit**.
+2. Faça o mesmo no `petlume-web`.
+
+As migrações novas rodam sozinhas quando a API inicia.
+
+> Para publicar automático a cada merge, quem é dono do repositório (`danieladps`) instala o Render no GitHub dela (Render → Account settings → Git Providers) e dá acesso a este repositório. Depois disso, liga o **Auto-Deploy** em cada serviço.
 
 ## Se der errado
 
