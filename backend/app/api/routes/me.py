@@ -16,7 +16,7 @@ def my_pets(user: User = Depends(get_current_user), db: Session = Depends(get_db
     """Anúncios do usuário logado, com os interesses recebidos em cada um."""
     pets = db.scalars(
         select(Pet)
-        .options(selectinload(Pet.adoptions).selectinload(Adoption.user))
+        .options(selectinload(Pet.adoptions).selectinload(Adoption.user), selectinload(Pet.adoptions).selectinload(Adoption.review))
         .where(Pet.owner_id == user.id)
         .order_by(Pet.created_at.desc())
     ).all()
@@ -32,7 +32,7 @@ def my_adoptions(user: User = Depends(get_current_user), db: Session = Depends(g
     """Pedidos de adoção que o usuário logado enviou."""
     adoptions = db.scalars(
         select(Adoption)
-        .options(selectinload(Adoption.pet).selectinload(Pet.owner))
+        .options(selectinload(Adoption.pet).selectinload(Pet.owner), selectinload(Adoption.review))
         .where(Adoption.user_id == user.id)
         .order_by(Adoption.created_at.desc(), Adoption.id.desc())
     ).all()
@@ -49,6 +49,7 @@ def my_adoptions(user: User = Depends(get_current_user), db: Session = Depends(g
                 if adoption.status == "approved"
                 else None
             ),
+            "review": adoption.review,
         }
         for adoption in adoptions
     ]

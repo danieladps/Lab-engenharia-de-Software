@@ -7,8 +7,8 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.api.deps import get_current_user
 from app.db.session import get_db
-from app.models import Adoption, Notification, Pet, User
-from app.schemas import AdoptionCreate, AdoptionDecision, AdoptionRead
+from app.models import Adoption, Notification, Pet, Review, User
+from app.schemas import AdoptionCreate, AdoptionDecision, AdoptionRead, ReviewCreate, ReviewRead
 
 router = APIRouter(tags=["Solicitações de adoção"])
 
@@ -74,3 +74,31 @@ def decide_adoption(
     db.commit()
     db.refresh(adoption)
     return adoption
+
+
+@router.post("/adoptions/{adoption_id}/review", response_model=ReviewRead, status_code=status.HTTP_201_CREATED)
+def review_adoption(
+    adoption_id: int,
+    payload: ReviewCreate,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Quem adotou avalia o processo de adoção (uma vez, depois do pedido aprovado)."""
+    adoption = db.scalar(select(Adoption).options(selectinload(Adoption.review)).where(Adoption.id == adoption_id))
+    # Só quem fez o pedido pode avaliar; para os outros, o pedido "não existe".
+    if adoption is None or adoption.user_id != user.id:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado.")
+    if adoption.status != "approved":
+        raise HTTPException(status_code=409, detail="Só dá para avaliar depois que o pedido for aprovado.")
+    if adoption.review is not None:
+        raise HTTPException(status_code=409, detail="Você já avaliou esta adoção.")
+    comment = (payload.comment or "").strip() or None
+    review = Review(adoption=adoption, rating=payload.rating, comment=comment)
+    db.add(review)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail="Você já avaliou esta adoção.") from None
+    db.refresh(review)
+    return review
