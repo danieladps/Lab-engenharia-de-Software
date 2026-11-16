@@ -93,6 +93,18 @@ class AdoptionCreate(BaseModel):
     message: str = Field(min_length=10, max_length=2000)
 
 
+class ReviewCreate(BaseModel):
+    rating: int = Field(ge=1, le=5)
+    comment: str | None = Field(default=None, max_length=500)
+
+
+class ReviewRead(BaseModel):
+    rating: int
+    comment: str | None = None
+    created_at: UTCDateTime
+    model_config = ConfigDict(from_attributes=True)
+
+
 class AdoptionRead(BaseModel):
     id: int
     pet_id: int
@@ -102,6 +114,7 @@ class AdoptionRead(BaseModel):
     status: str
     created_at: UTCDateTime
     decided_at: UTCDateTime | None = None
+    review: ReviewRead | None = None
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -130,6 +143,7 @@ class MyAdoption(BaseModel):
     pet: PetRead
     # Só vem preenchido quando o pedido foi aprovado, para combinarem a adoção.
     owner_contact: OwnerContact | None = None
+    review: ReviewRead | None = None
     model_config = ConfigDict(from_attributes=True)
 
 
