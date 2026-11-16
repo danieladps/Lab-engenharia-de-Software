@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { PawPrint } from 'lucide-react'
+import { mediaUrl } from '../api'
 
 // Mostra a foto do pet ou, se o link falhar, um fundo com uma pata.
 export default function PetImage({ src, alt, className = '' }) {
@@ -11,5 +12,5 @@ export default function PetImage({ src, alt, className = '' }) {
       </div>
     )
   }
-  return <img className={className} src={src} alt={alt} loading="lazy" onError={() => setFailed(true)} />
+  return <img className={className} src={mediaUrl(src)} alt={alt} loading="lazy" onError={() => setFailed(true)} />
 }
