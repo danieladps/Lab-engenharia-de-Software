@@ -26,10 +26,11 @@
 
 | A fazer | Em andamento | Concluído |
 | --- | --- | --- |
-| Ler a chave e a senha do banco do `docker-compose.yml` a partir de um `.env`. | Upload de foto do pet: o site reduz a imagem e a guarda no banco (branch feat/foto-do-pet). | Avaliar a adoção: nota de 1 a 5 e comentário depois de aprovado (PR #29). |
-| Validar os casos de uso no site publicado (issue #8). | — | Notificações dentro do app: pedido novo, pedido aprovado ou recusado (PR #27). |
-| Preparar os anúncios de exemplo e ensaiar a demonstração (issue #9). | — | Integração contínua no GitHub Actions (PR #25). |
-| Registrar evidências da demonstração (issue #10). | — | Kanban da Sprint 4 e issues resolvidas fechadas (PR #25). |
+| Validar os casos de uso no site publicado (issue #8). | Ler a chave e a senha do banco do `docker-compose.yml` a partir de um `.env` (branch chore/docker-env). | Upload de foto do pet: o site reduz a imagem e a guarda no banco (PR #31). |
+| Preparar os anúncios de exemplo e ensaiar a demonstração (issue #9). | — | Avaliar a adoção: nota de 1 a 5 e comentário depois de aprovado (PR #29). |
+| Registrar evidências da demonstração (issue #10). | — | Notificações dentro do app: pedido novo, pedido aprovado ou recusado (PR #27). |
+| — | — | Integração contínua no GitHub Actions (PR #25). |
+| — | — | Kanban da Sprint 4 e issues resolvidas fechadas (PR #25). |
 | — | — | Docker: `docker-compose.yml` com API, site e Postgres. |
 | — | — | Mensagens entre quem pediu e quem anunciou, com não lidas no menu (PR #23). |
 | — | — | Editar e remover anúncio (PR #22). |
