@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import CheckConstraint, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -26,6 +26,9 @@ class Pet(Base):
     image_url: Mapped[str] = mapped_column(String(500))
     # Nome exibido no anúncio (a pessoa ou o abrigo responsável).
     donor_name: Mapped[str] = mapped_column(String(120))
+    # Centro da cidade do anúncio (não é o endereço de quem anunciou). Vazio se não achou a cidade.
+    latitude: Mapped[float | None] = mapped_column(Float, nullable=True)
+    longitude: Mapped[float | None] = mapped_column(Float, nullable=True)
     status: Mapped[str] = mapped_column(String(30), default="available", index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     owner: Mapped["User"] = relationship(back_populates="pets")
