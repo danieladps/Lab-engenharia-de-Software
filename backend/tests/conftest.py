@@ -3,6 +3,8 @@ import secrets
 
 # Chave só para os testes, gerada na hora (nunca uma chave real).
 os.environ.setdefault("JWT_SECRET", secrets.token_urlsafe(32))
+# Os testes não chamam a API de mapas; cada teste que precisa troca o geocode_city.
+os.environ["GEOCODING_ENABLED"] = "false"
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
