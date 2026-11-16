@@ -11,7 +11,15 @@ function apiBaseUrl(value) {
   return base.endsWith('/api') ? base : `${base}/api`
 }
 
-const api = axios.create({ baseURL: apiBaseUrl(import.meta.env.VITE_API_URL) })
+const API_BASE = apiBaseUrl(import.meta.env.VITE_API_URL)
+const api = axios.create({ baseURL: API_BASE })
+
+// Fotos enviadas pelo site ficam na API e são salvas como "/api/photos/1".
+// Em produção o site e a API têm endereços diferentes, então junta o endereço da API.
+export function mediaUrl(src) {
+  if (!src || !src.startsWith('/api/')) return src
+  return API_BASE.replace(/\/api$/, '') + src
+}
 
 // Envia o token de login em toda chamada, quando existir.
 api.interceptors.request.use((config) => {
