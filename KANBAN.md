@@ -19,20 +19,22 @@
 | UC-T1 | Cadastrar-se | Concluído (PR #17, feat/auth). |
 | UC-T2 | Login/logout | Concluído (PR #17, feat/auth). |
 | UC-T3 | Editar perfil | Concluído (PR #19): nome e cidade. |
-| UC-T4 | Receber notificações | **A fazer nesta sprint.** Hoje só existe o contador de mensagens não lidas (PR #23). |
+| UC-T4 | Receber notificações | Em andamento (branch feat/notificacoes): tela Avisos com pedido novo e resposta ao pedido, e número no menu. |
 | UC-T5 | Gerenciar usuários e permissões | Fora do escopo; MVP sem painel administrativo. |
 
 ## Tarefas da sprint
 
 | A fazer | Em andamento | Concluído |
 | --- | --- | --- |
-| Notificações dentro do app: pedido novo, pedido aprovado ou recusado (UC-T4). | Integração contínua no GitHub Actions: testes da API, lint e build do site em cada PR (issue #24). | Docker: `docker-compose.yml` com API, site e Postgres. |
-| Avaliar a adoção: nota de 1 a 5 e comentário depois de aprovado (UC-A8). | Atualizar este quadro para a Sprint 4 e fechar as issues já resolvidas (issue #24). | Mensagens entre quem pediu e quem anunciou, com não lidas no menu (PR #23). |
-| Upload de foto do pet (hoje o anúncio aceita só o endereço de uma imagem). | — | Editar e remover anúncio (PR #22). |
-| Ler a chave e a senha do banco do `docker-compose.yml` a partir de um `.env`. | — | Deploy na nuvem: site e API no Render, banco Postgres no Neon (PR #21, DEPLOY.md). |
-| Validar os casos de uso no site publicado (issue #8). | — | Aprovar ou recusar pedidos e acompanhar o status (PR #20). |
-| Preparar os anúncios de exemplo e ensaiar a demonstração (issue #9). | — | Favoritos, Minhas solicitações e edição de perfil (PR #19). |
-| Registrar evidências da demonstração (issue #10). | — | Novo layout mobile-first dos protótipos do Figma (PR #18). |
+| Avaliar a adoção: nota de 1 a 5 e comentário depois de aprovado (UC-A8). | Notificações dentro do app: pedido novo, pedido aprovado ou recusado (UC-T4). | Integração contínua no GitHub Actions (PR #25). |
+| Upload de foto do pet (hoje o anúncio aceita só o endereço de uma imagem). | — | Kanban da Sprint 4 e issues resolvidas fechadas (PR #25). |
+| Ler a chave e a senha do banco do `docker-compose.yml` a partir de um `.env`. | — | Docker: `docker-compose.yml` com API, site e Postgres. |
+| Validar os casos de uso no site publicado (issue #8). | — | Mensagens entre quem pediu e quem anunciou, com não lidas no menu (PR #23). |
+| Preparar os anúncios de exemplo e ensaiar a demonstração (issue #9). | — | Editar e remover anúncio (PR #22). |
+| Registrar evidências da demonstração (issue #10). | — | Deploy na nuvem: site e API no Render, banco Postgres no Neon (PR #21, DEPLOY.md). |
+| — | — | Aprovar ou recusar pedidos e acompanhar o status (PR #20). |
+| — | — | Favoritos, Minhas solicitações e edição de perfil (PR #19). |
+| — | — | Novo layout mobile-first dos protótipos do Figma (PR #18). |
 | — | — | Cadastro, login e logout (PR #17). |
 | — | — | Consulta dos interesses em Meus anúncios (PR #16). |
 
