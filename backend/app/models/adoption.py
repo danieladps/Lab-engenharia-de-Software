@@ -31,6 +31,8 @@ class Adoption(Base):
     decided_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     pet: Mapped["Pet"] = relationship(back_populates="adoptions")
     user: Mapped["User"] = relationship(back_populates="adoptions")
+    # Avaliação de quem adotou (só existe em pedido aprovado).
+    review: Mapped["Review | None"] = relationship(back_populates="adoption", uselist=False, cascade="all, delete-orphan")
 
     # Nome e e-mail vêm da conta de quem pediu; só o dono do anúncio recebe esses dados.
     @property
