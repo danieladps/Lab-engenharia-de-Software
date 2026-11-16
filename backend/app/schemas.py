@@ -86,6 +86,8 @@ class PetRead(BaseModel):
     status: str
     donor_name: str
     created_at: UTCDateTime
+    # Só vem quando a busca manda a localização de quem procura.
+    distance_km: float | None = None
     model_config = ConfigDict(from_attributes=True)
 
 
