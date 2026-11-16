@@ -1,20 +1,30 @@
 import { NavLink, Outlet } from 'react-router-dom'
-import { Heart, House, MessageCircle, PawPrint, Plus, UserRound } from 'lucide-react'
+import { Bell, Heart, House, MessageCircle, PawPrint, Plus, UserRound } from 'lucide-react'
+import { useNotificationCount } from '../lib/notifications'
 import { useUnreadCount } from '../lib/unread'
 
 const tabs = [
   { to: '/', label: 'Início', icon: House, end: true },
   { to: '/favoritos', label: 'Favoritos', icon: Heart },
   { to: '/mensagens', label: 'Mensagens', icon: MessageCircle },
+  { to: '/avisos', label: 'Avisos', icon: Bell },
   { to: '/perfil', label: 'Perfil', icon: UserRound },
 ]
 
 // Moldura das telas principais: barra no topo (computador) e menu inferior (celular).
 export default function AppShell() {
   const unread = useUnreadCount()
-  const badge = (to) => (to === '/mensagens' && unread > 0
-    ? <span className="nav-badge" aria-label={`${unread} mensagens não lidas`}>{unread > 9 ? '9+' : unread}</span>
-    : null)
+  const notices = useNotificationCount()
+  const counts = {
+    '/mensagens': [unread, 'mensagens não lidas'],
+    '/avisos': [notices, 'avisos novos'],
+  }
+  const badge = (to) => {
+    const [value, label] = counts[to] ?? [0, '']
+    return value > 0
+      ? <span className="nav-badge" aria-label={`${value} ${label}`}>{value > 9 ? '9+' : value}</span>
+      : null
+  }
 
   return (
     <div className="shell">
