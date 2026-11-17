@@ -4,6 +4,7 @@ import { House, LoaderCircle, LocateFixed, MapPin, PawPrint, Plus, Search, Slide
 import api from '../api'
 import PetCard from '../components/PetCard'
 import PetImage from '../components/PetImage'
+import CityLocator from '../components/CityLocator'
 import EmptyState from '../components/EmptyState'
 import { useAuth } from '../lib/auth'
 import { ageLabel, apiError, firstName, speciesChips } from '../lib/pets'
@@ -159,7 +160,12 @@ export default function Home() {
           {locating ? 'Descobrindo sua localização...' : near ? 'Mostrando os mais perto de você · desligar' : 'Ver pets perto de mim'}
         </button>
         <Link to="/onde-adotar" className="near-button"><House size={16} aria-hidden="true" /> ONGs e abrigos perto de você</Link>
-        {locationError && <p className="inline-error" role="alert">{locationError}</p>}
+        {locationError && (
+          <CityLocator
+            message={locationError}
+            onFound={(found) => { setLocationError(''); setNear(found) }}
+          />
+        )}
         <div className="chips" role="group" aria-label="Filtrar por espécie">
           {speciesChips.map((chip) => (
             <button key={chip.value} type="button" className={species === chip.value ? 'chip selected' : 'chip'} aria-pressed={species === chip.value} onClick={() => setSpecies(chip.value)}>
