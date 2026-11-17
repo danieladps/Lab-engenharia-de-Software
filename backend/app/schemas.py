@@ -1,5 +1,7 @@
+import re
 from datetime import datetime, timezone
 from typing import Annotated, Literal
+from urllib.parse import urlparse
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 
@@ -13,6 +15,26 @@ def _as_utc(value: datetime) -> datetime:
 
 
 UTCDateTime = Annotated[datetime, AfterValidator(_as_utc)]
+
+UPLOADED_PHOTO = re.compile(r"^/api/photos/\d+$")
+
+
+def _public_image_url(value: str) -> str:
+    """Aceita só foto enviada pelo site ou link http(s).
+
+    Links como blob:, file: ou data: só funcionam no computador de quem colou,
+    então para as outras pessoas o anúncio ficaria sem foto.
+    """
+    value = value.strip()
+    if UPLOADED_PHOTO.match(value):
+        return value
+    parsed = urlparse(value)
+    if parsed.scheme in ("http", "https") and parsed.netloc:
+        return value
+    raise ValueError("Use uma foto enviada pelo site ou um link que comece com https://")
+
+
+ImageUrl = Annotated[str, AfterValidator(_public_image_url)]
 
 
 class UserCreate(BaseModel):
@@ -55,7 +77,7 @@ class PetCreate(BaseModel):
     age_years: int = Field(ge=0, le=30)
     city: str = Field(min_length=2, max_length=100)
     description: str = Field(min_length=10, max_length=2000)
-    image_url: str = Field(min_length=8, max_length=500)
+    image_url: ImageUrl = Field(min_length=8, max_length=500)
     donor_name: str = Field(min_length=2, max_length=120)
 
 
@@ -69,7 +91,7 @@ class PetUpdate(BaseModel):
     age_years: int | None = Field(default=None, ge=0, le=30)
     city: str | None = Field(default=None, min_length=2, max_length=100)
     description: str | None = Field(default=None, min_length=10, max_length=2000)
-    image_url: str | None = Field(default=None, min_length=8, max_length=500)
+    image_url: ImageUrl | None = Field(default=None, min_length=8, max_length=500)
     donor_name: str | None = Field(default=None, min_length=2, max_length=120)
 
 
