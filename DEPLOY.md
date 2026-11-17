@@ -59,6 +59,14 @@ A página `/onde-adotar` lista ONGs e abrigos perto de quem procura, com dados d
 4. No Render, no serviço `petlume-api`, crie a variável `GOOGLE_PLACES_API_KEY` com a chave. A chave fica só na API; nunca coloque no site (`petlume-web`).
 5. Opcional: `PLACES_DAILY_LIMIT` limita quantas buscas no Google a API faz por dia (padrão: 200). Cada área fica guardada por 12 horas.
 
+**Mapa da página (opcional).** O Google só permite mostrar esses locais num mapa do próprio Google, então o mapa usa a Maps JavaScript API, que roda no navegador:
+
+1. No mesmo projeto do Google Cloud, ative a **Maps JavaScript API**.
+2. Crie **outra** chave de API. Em "Restrições de aplicativos" escolha **Sites** e adicione `https://petlume-web.onrender.com/*` (e `http://localhost:5173/*` para testar no computador). Em "Restrições de API", deixe só a Maps JavaScript API.
+3. No Render, no serviço `petlume-web`, crie a variável `VITE_GOOGLE_MAPS_KEY` com essa chave e faça um novo deploy (o Vite coloca a chave no site na hora do build).
+
+Essa chave aparece no código do site, e tudo bem: é assim que o Google projetou a Maps JavaScript API, e a restrição por endereço impede o uso em outros sites. Nunca use aqui a chave da Places API. Sem `VITE_GOOGLE_MAPS_KEY`, a página mostra só a lista.
+
 ## No dia da apresentação
 
 No plano gratuito, a API **dorme depois de uns 15 minutos sem uso** e leva cerca de 1 minuto para acordar. Abra `/api/health` uns 5 minutos antes de apresentar.
