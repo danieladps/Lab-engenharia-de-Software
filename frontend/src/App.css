@@ -385,3 +385,20 @@ button.menu-row { width: 100%; font: inherit; text-align: left; cursor: pointer;
 .near-button.active { border-color: var(--orange); background: var(--orange-soft); }
 .near-button:disabled { cursor: default; opacity: .8; }
 .pet-distance { color: var(--orange-dark); font-weight: 700; }
+
+/* Onde adotar */
+.near-button + .near-button { margin-left: 8px; }
+a.near-button { text-decoration: none; }
+.place-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.place-item { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
+.place-text { flex: 1; display: grid; gap: 2px; min-width: 0; }
+.place-text strong { overflow-wrap: anywhere; }
+.place-address { color: #5a4a40; font-size: 13px; line-height: 1.4; overflow-wrap: anywhere; }
+.place-distance { display: inline-flex; align-items: center; gap: 4px; color: var(--orange-dark); font-size: 12px; font-weight: 700; }
+.place-item .button { flex: none; }
+.place-credit { margin-top: 14px; }
+@media (max-width: 520px) {
+  .near-button + .near-button { margin-left: 0; }
+  .place-item { flex-wrap: wrap; }
+  .place-item .button { margin-left: 52px; }
+}
