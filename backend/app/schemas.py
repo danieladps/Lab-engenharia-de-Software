@@ -243,3 +243,15 @@ class PhotoRead(BaseModel):
     id: int
     # Endereço relativo à API; vai no image_url do anúncio.
     url: str
+
+
+class AdoptionPlace(BaseModel):
+    """Local de adoção vindo do Google Maps (ONG, abrigo, centro de zoonoses)."""
+
+    id: str
+    name: str
+    address: str
+    latitude: float
+    longitude: float
+    distance_km: float
+    maps_url: str | None = None

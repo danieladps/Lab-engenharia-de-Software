@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { LoaderCircle, LocateFixed, MapPin, PawPrint, Plus, Search, SlidersHorizontal, X } from 'lucide-react'
+import { House, LoaderCircle, LocateFixed, MapPin, PawPrint, Plus, Search, SlidersHorizontal, X } from 'lucide-react'
 import api from '../api'
 import PetCard from '../components/PetCard'
 import PetImage from '../components/PetImage'
@@ -158,6 +158,7 @@ export default function Home() {
           {locating ? <LoaderCircle className="spin" size={16} aria-hidden="true" /> : <LocateFixed size={16} aria-hidden="true" />}
           {locating ? 'Descobrindo sua localização...' : near ? 'Mostrando os mais perto de você · desligar' : 'Ver pets perto de mim'}
         </button>
+        <Link to="/onde-adotar" className="near-button"><House size={16} aria-hidden="true" /> ONGs e abrigos perto de você</Link>
         {locationError && <p className="inline-error" role="alert">{locationError}</p>}
         <div className="chips" role="group" aria-label="Filtrar por espécie">
           {speciesChips.map((chip) => (

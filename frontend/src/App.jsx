@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
+import AdoptionPlaces from './pages/AdoptionPlaces'
 import AppShell from './components/AppShell'
 import RequireAuth from './components/RequireAuth'
 import SessionWatcher from './components/SessionWatcher'
@@ -25,6 +26,7 @@ export default function App() {
         <Route element={<AppShell />}>
           <Route index element={<Home />} />
           <Route path="pets/:id" element={<PetDetail />} />
+          <Route path="onde-adotar" element={<AdoptionPlaces />} />
           <Route path="favoritos" element={<Favorites />} />
           <Route path="mensagens" element={<Messages />} />
           <Route path="mensagens/:id" element={<RequireAuth><Conversation /></RequireAuth>} />
