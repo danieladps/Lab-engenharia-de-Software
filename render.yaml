@@ -42,3 +42,5 @@ services:
     envVars:
       - key: VITE_API_URL
         sync: false # endereço da API, ex.: https://petlume-api.onrender.com
+      - key: VITE_GOOGLE_MAPS_KEY
+        sync: false # chave da Maps JavaScript API (mapa da página "Onde adotar"); restrita ao endereço do site
