@@ -13,6 +13,10 @@ class Settings(BaseSettings):
     jwt_expire_minutes: int = 60 * 24
     # Busca as coordenadas das cidades no Nominatim (OpenStreetMap). Desligado nos testes.
     geocoding_enabled: bool = True
+    # Chave da Google Places API (página "Onde adotar"). Vazia: a página avisa que não está configurada.
+    google_places_api_key: str = ""
+    # Máximo de buscas no Google por dia, para não passar da cota gratuita.
+    places_daily_limit: int = 200
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
