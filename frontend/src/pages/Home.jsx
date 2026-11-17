@@ -44,7 +44,8 @@ export default function Home() {
     return term ? items.filter((pet) => `${pet.name} ${pet.breed}`.toLowerCase().includes(term)) : items
   }, [current, text])
 
-  const featured = !text && species === 'Todos' && size === 'Todos' && !city && !near ? pets[0] : null
+  // O destaque é sempre um pet que ainda aceita pedidos.
+  const featured = !text && species === 'Todos' && size === 'Todos' && !city && !near ? pets.find((pet) => pet.status === 'available') ?? null : null
   const activeFilters = (size !== 'Todos') + Boolean(city) + Boolean(near && maxKm)
 
   async function toggleNear() {
@@ -150,7 +151,7 @@ export default function Home() {
 
       <section aria-labelledby="available-title">
         <div className="section-title">
-          <h2 id="available-title">Disponíveis para adoção</h2>
+          <h2 id="available-title">Pets para adoção</h2>
           {!loading && <span>{pets.length} {pets.length === 1 ? 'pet' : 'pets'}</span>}
         </div>
         <button type="button" className={near ? 'near-button active' : 'near-button'} onClick={toggleNear} aria-pressed={Boolean(near)} disabled={locating}>
