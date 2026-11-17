@@ -54,7 +54,8 @@ export default function PhotoField({ initial = '', disabled, onChange }) {
       <input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/*" onChange={handleFile} hidden />
       {useLink ? (
         <label>Link da foto
-          <input name="image_url" type="url" value={url.startsWith('/api/') ? '' : url} onChange={(event) => setUrl(event.target.value)} placeholder="https://..." required maxLength="500" disabled={disabled} />
+          <input name="image_url" type="url" value={url.startsWith('/api/') ? '' : url} onChange={(event) => setUrl(event.target.value)} placeholder="https://..." required maxLength="500" pattern="https?://.+" title="Cole um link que comece com https://" disabled={disabled} />
+          <small className="hint">Prefira enviar a foto do aparelho: links de redes sociais ou do Google Imagens podem parar de funcionar ou não abrir para outras pessoas.</small>
         </label>
       ) : (
         <input type="hidden" name="image_url" value={url} />

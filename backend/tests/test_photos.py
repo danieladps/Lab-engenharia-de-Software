@@ -45,3 +45,13 @@ def test_pet_can_use_uploaded_photo(client, owner):
     created = client.post("/api/pets", json=sample_pet(image_url=url), headers=owner)
     assert created.status_code == 201
     assert created.json()["image_url"] == url
+
+
+def test_pet_photo_link_must_work_for_everyone(client, owner):
+    # Links que só abrem no computador de quem colou são recusados.
+    for url in ("blob:https://web.whatsapp.com/abc-123", "file:///C:/fotos/nina.jpg", "javascript:alert(1)", "/api/photos/abc"):
+        response = client.post("/api/pets", json=sample_pet(image_url=url), headers=owner)
+        assert response.status_code == 422, url
+
+    pet = client.post("/api/pets", json=sample_pet(), headers=owner).json()
+    assert client.patch(f"/api/pets/{pet['id']}", json={"image_url": "file:///C:/nina.jpg"}, headers=owner).status_code == 422

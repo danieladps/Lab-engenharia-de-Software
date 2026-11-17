@@ -10,6 +10,8 @@ from app.schemas import PetCreate, PetRead, PetUpdate
 
 router = APIRouter(prefix="/pets", tags=["Adoção"])
 
+LISTED_STATUSES = ("available", "adoption_pending")
+
 
 @router.get("", response_model=list[PetRead])
 def list_pets(
@@ -21,7 +23,9 @@ def list_pets(
     max_km: float | None = Query(default=None, gt=0, le=5000, description="Distância máxima, com lat e lng"),
     db: Session = Depends(get_db),
 ):
-    query = select(Pet).where(Pet.status == "available")
+    # Pets com pedido em andamento continuam na busca (com a etiqueta "Pedido recebido"):
+    # se o pedido for recusado, o pet volta a aceitar outros. Só os já adotados saem.
+    query = select(Pet).where(Pet.status.in_(LISTED_STATUSES))
     if species and species != "Todos":
         query = query.where(Pet.species == species)
     if size and size != "Todos":
