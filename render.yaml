@@ -24,6 +24,8 @@ services:
         value: "true"
       - key: DEMO_USER_PASSWORD
         sync: false # senha das contas de demonstração
+      - key: GOOGLE_PLACES_API_KEY
+        sync: false # chave da Google Places API (página "Onde adotar"); veja DEPLOY.md
 
   # Site (React + Vite), servido como arquivos estáticos.
   - type: web

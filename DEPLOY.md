@@ -49,6 +49,16 @@ Pode colar os endereços com ou sem barra no final, e a `VITE_API_URL` com ou se
 2. Abra o site, entre com `abrigo@petlume.example` ou `visitante@petlume.example` e a senha de `DEMO_USER_PASSWORD`.
 3. Abra direto um endereço interno, como `/perfil`, e recarregue a página. Deve abrir normalmente.
 
+## 5. Página "Onde adotar" (Google Places API)
+
+A página `/onde-adotar` lista ONGs e abrigos perto de quem procura, com dados do Google Maps. Sem a chave, ela só avisa que a busca não está configurada; o resto do site funciona normalmente.
+
+1. Em https://console.cloud.google.com, crie um projeto e cadastre o faturamento (o Google pede cartão, mas há uma cota gratuita por mês).
+2. Em **APIs e serviços > Biblioteca**, ative a **Places API (New)**.
+3. Em **APIs e serviços > Credenciais**, crie uma **chave de API** e, em "Restrições de API", deixe só a Places API (New).
+4. No Render, no serviço `petlume-api`, crie a variável `GOOGLE_PLACES_API_KEY` com a chave. A chave fica só na API; nunca coloque no site (`petlume-web`).
+5. Opcional: `PLACES_DAILY_LIMIT` limita quantas buscas no Google a API faz por dia (padrão: 200). Cada área fica guardada por 12 horas.
+
 ## No dia da apresentação
 
 No plano gratuito, a API **dorme depois de uns 15 minutos sem uso** e leva cerca de 1 minuto para acordar. Abra `/api/health` uns 5 minutos antes de apresentar.
