@@ -28,7 +28,7 @@ def test_adoption_requires_login(client, owner):
     assert client.post(f"/api/pets/{pet['id']}/adoptions", json=INTEREST).status_code == 401
 
 
-def test_submit_adoption_request_marks_pet_unavailable(client, owner, adopter):
+def test_submit_adoption_request_keeps_pet_listed_as_pending(client, owner, adopter):
     pet = client.post("/api/pets", json=sample_pet(), headers=owner).json()
 
     response = client.post(f"/api/pets/{pet['id']}/adoptions", json=INTEREST, headers=adopter)
@@ -36,7 +36,9 @@ def test_submit_adoption_request_marks_pet_unavailable(client, owner, adopter):
     assert response.status_code == 201
     assert response.json()["applicant_name"] == "Alex Teste"
     assert response.json()["applicant_email"] == "alex@example.com"
-    assert client.get("/api/pets").json() == []
+    # O pet continua na busca, marcado como "pedido recebido" (não some da página inicial).
+    listed = client.get("/api/pets").json()
+    assert [(item["id"], item["status"]) for item in listed] == [(pet["id"], "adoption_pending")]
 
 
 def test_owner_cannot_adopt_own_pet(client, owner):
