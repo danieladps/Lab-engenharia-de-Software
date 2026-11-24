@@ -1,5 +1,26 @@
 # PetLume
 
+[![CI](https://github.com/danieladps/Lab-engenharia-de-Software/actions/workflows/ci.yml/badge.svg)](https://github.com/danieladps/Lab-engenharia-de-Software/actions/workflows/ci.yml)
+
+**Site publicado:** https://petlume-web.onrender.com
+
+Projeto da disciplina Laboratório de Engenharia de Software — Universidade Presbiteriana Mackenzie, turma 6P, Prof. Msc. Luiz Carlos Machi Lozano (2026).
+
+| Integrante | RA |
+| --- | --- |
+| Anna Luiza Stella Santos | 10417401 |
+| Daniel Monteiro Malacarne | 10420454 |
+| Daniela Pereira da Silva | 10410906 |
+| Murillo Henrique Sakamoto | 10426242 |
+
+## Documentação
+
+- [Documentação do projeto (requisitos, casos de uso, arquitetura e casos de teste)](docs/documentacao-petlume.pdf)
+- [README detalhado](README-detalhado.md): estrutura do código e dados
+- [Deploy na nuvem](DEPLOY.md)
+- [Kanban da sprint](KANBAN.md)
+- [Códigos de teste](backend/tests)
+
 Aplicação web para aproximar pessoas interessadas em adotar de responsáveis por pets. Cada pessoa cria uma conta para anunciar pets e demonstrar interesse. Casos de uso:
 
 0. **Criar conta e entrar:** nome, e-mail, senha e cidade.
@@ -81,6 +102,21 @@ O site abre em http://localhost:5173 e a API em http://localhost:8000. O `.env` 
 
 > Quem já tinha subido o Docker com a senha antiga do banco precisa apagar o volume antes: `docker compose down -v` (apaga só os dados locais do Docker).
 
+## Manual de utilização
+
+1. Abra o site e clique em **Entrar**. Sem conta, clique em **Criar conta** e informe nome, e-mail, senha (mínimo de 8 caracteres) e cidade.
+2. Na **Início**, veja os pets disponíveis. Filtre por espécie (Cães, Gatos, Outros), busque por nome ou raça, ou use **Ver pets perto de mim** (o navegador pede sua localização, que não é guardada).
+3. Clique em um pet para ver o perfil completo. O coração salva o pet em **Favoritos**.
+4. Para adotar, clique em **Quero adotar**, escreva uma mensagem para o responsável e envie. O pedido aparece em **Perfil > Minhas solicitações** como "aguardando resposta".
+5. Converse com o responsável em **Mensagens**. Pedidos novos e respostas aparecem em **Avisos**.
+6. Para anunciar, clique em **Anunciar pet**, preencha os dados e escolha uma foto (JPEG, PNG ou WebP, até 2 MB).
+7. Em **Perfil > Meus anúncios**, edite ou remova seus anúncios e aprove ou recuse os pedidos recebidos. O contato do responsável só aparece para quem pediu depois da aprovação.
+8. Depois de uma adoção aprovada, quem adotou pode avaliar o processo (nota de 1 a 5 e comentário).
+9. **Onde adotar** mostra ONGs e abrigos perto de você no mapa.
+10. Em **Perfil**, edite nome e cidade ou saia da conta.
+
+Para demonstração, o seed cria as contas `abrigo@petlume.example` e `visitante@petlume.example` (senha definida em `DEMO_USER_PASSWORD`).
+
 ## Rotas da API
 
 Todas as rotas usam o prefixo `/api`. As marcadas com 🔒 exigem o cabeçalho `Authorization: Bearer <token>` recebido no login.
@@ -115,11 +151,17 @@ Todas as rotas usam o prefixo `/api`. As marcadas com 🔒 exigem o cabeçalho `
 
 ## Testes
 
+Os testes automatizados ficam em [`backend/tests`](backend/tests): **87 testes** (pytest + FastAPI TestClient) que chamam a API como o site faria e cobrem cadastro e login, anúncios, busca e proximidade, pedidos de adoção, aprovação/recusa, mensagens, avisos, favoritos, fotos, perfil, avaliações, "Onde adotar" e migrações do banco. Cada teste usa um banco SQLite em memória e dados fictícios. A lista completa de casos de teste (CT-01 a CT-87), ligada aos casos de uso, está no capítulo 7 da [documentação](docs/documentacao-petlume.pdf).
+
+Para rodar:
+
 ```bash
 cd backend
 python -m pip install -r requirements-dev.txt
-python -m pytest -q
+python -m pytest -v
 ```
+
+Resultado esperado: `86 passed, 1 skipped`. O teste pulado roda as migrações num Postgres real e só executa com `TEST_POSTGRES_URL` apontando para um banco de teste vazio.
 
 Para verificar o front-end:
 
@@ -128,6 +170,10 @@ cd frontend
 npm run lint
 npm run build
 ```
+
+### Esteira de CI
+
+O workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) roda no GitHub Actions a cada pull request e a cada push na `main`, com dois jobs: **API (pytest)** e **Site (lint e build)**. O merge só é feito com os dois verdes; depois do merge, o Render publica a nova versão.
 
 Consulte [README-detalhado.md](README-detalhado.md) para estrutura do projeto, detalhes dos dados e documentação complementar.
 
